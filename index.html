@@ -2,113 +2,187 @@
 <html>
 <head>
   <title>BetweenUs</title>
+
+  <!-- 🌿 ฟอนต์ -->
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+
   <style>
     body {
-      font-family: Arial;
+      font-family: 'Kanit', sans-serif;
       background: #0f0f14;
       color: white;
-      text-align: center;
-      padding: 20px;
+      margin: 0;
+      overflow-x: hidden;
     }
 
-    .card {
-      background: #1a1a22;
-      padding: 20px;
-      border-radius: 16px;
-      margin: 15px auto;
-      width: 90%;
-      max-width: 400px;
+    /* 🌫️ เงาฟีลคนกอดกัน */
+    body::before {
+      content: "";
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05), transparent),
+                  radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent);
+      z-index: -1;
+    }
+
+    header {
+      padding: 15px;
+      text-align: center;
+      font-weight: 300;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 10px;
     }
 
     textarea {
-      width: 90%;
-      height: 80px;
-      border-radius: 10px;
+      width: 100%;
+      border-radius: 12px;
       border: none;
       padding: 10px;
       margin-top: 10px;
+      font-family: 'Kanit';
     }
 
     button {
       background: white;
       color: black;
       border: none;
-      padding: 10px 18px;
+      padding: 8px 16px;
       border-radius: 20px;
-      margin-top: 10px;
+      margin-top: 8px;
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.8;
+    .chat {
+      margin-top: 20px;
     }
 
-    .msg {
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      margin: 8px 0;
+      max-width: 80%;
+      position: relative;
+      font-size: 14px;
+    }
+
+    .me {
+      background: #ffffff;
+      color: black;
+      margin-left: auto;
+    }
+
+    .other {
       background: #2a2a35;
-      padding: 10px;
-      border-radius: 10px;
-      margin-top: 10px;
+      margin-right: auto;
+    }
+
+    .like {
+      font-size: 12px;
+      margin-top: 5px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .like:hover {
+      opacity: 1;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>BetweenUs 💭</h2>
+<header>BetweenUs 💭</header>
 
-  <div class="card">
-    <h3>อยากบ่นอะไรไหม?</h3>
-    <textarea id="inputText"></textarea><br>
-    <button onclick="sendMessage()">ส่งข้อความ</button>
-  </div>
+<div class="container">
 
-  <div class="card">
-    <h3>สุ่มข้อความจากคนอื่น</h3>
-    <button onclick="getRandom()">สุ่ม</button>
-    <div id="randomBox"></div>
+  <textarea id="msgInput" placeholder="พิมพ์ระบายอะไรออกมาก็ได้..."></textarea>
+  <button onclick="sendMessage()">ส่ง</button>
 
-    <textarea id="replyText" placeholder="พิมพ์กำลังใจ..."></textarea><br>
-    <button onclick="sendReply()">ส่งกำลังใจ</button>
-  </div>
+  <div class="chat" id="chatBox"></div>
 
-  <div class="card">
-    <h3>📥 ก๊อกๆ มีคนฝากมา</h3>
-    <div id="inbox"></div>
-  </div>
+</div>
 
-<script>
-  let myId = localStorage.getItem("myId");
-  if (!myId) {
-    myId = "user_" + Math.random();
-    localStorage.setItem("myId", myId);
-  }
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-  function sendMessage() {
-    let text = document.getElementById("inputText").value;
+const firebaseConfig = {
+  apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
+  authDomain: "betweenus-ae90e.firebaseapp.com",
+  projectId: "betweenus-ae90e",
+  storageBucket: "betweenus-ae90e.firebasestorage.app",
+  messagingSenderId: "294950831796",
+  appId: "1:294950831796:web:33251ef3088aa73610f9e1"
+};
 
-    let messages = JSON.parse(localStorage.getItem("messages")) || [];
-    messages.push({
-      text: text,
-      id: Date.now(),
-      owner: myId
-    });
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    localStorage.setItem("messages", JSON.stringify(messages));
-    alert("ส่งแล้ว🫀");
-  }
+let myId = localStorage.getItem("myId");
+if (!myId) {
+  myId = "user_" + Math.random();
+  localStorage.setItem("myId", myId);
+}
 
-  let currentRandom = null;
+window.sendMessage = async function() {
+  const text = document.getElementById("msgInput").value;
 
-  function getRandom() {
-    let messages = JSON.parse(localStorage.getItem("messages")) || [];
+  await addDoc(collection(db, "messages"), {
+    content: text,
+    owner: myId,
+    likes: 0,
+    createdAt: new Date()
+  });
 
-    let others = messages.filter(m => m.owner !== myId);
+  document.getElementById("msgInput").value = "";
+}
 
-    if (others.length === 0) {
-      document.getElementById("randomBox").innerText = "ยังไม่มีข้อความจากคนอื่น";
-      return;
-    }
+window.likeMsg = async function(id, currentLikes) {
+  const ref = doc(db, "messages", id);
+  await updateDoc(ref, {
+    likes: currentLikes + 1
+  });
+}
 
+function render(messages) {
+  const box = document.getElementById("chatBox");
+  box.innerHTML = "";
+
+  messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = "bubble " + (msg.owner === myId ? "me" : "other");
+
+    div.innerHTML = `
+      ${msg.content}
+      <div class="like" onclick="likeMsg('${msg.id}', ${msg.likes})">
+        ❤️ ${msg.likes}
+      </div>
+    `;
+
+    box.appendChild(div);
+  });
+}
+
+/* 🔔 REALTIME */
+onSnapshot(collection(db, "messages"), (snapshot) => {
+  let msgs = [];
+  snapshot.forEach(doc => {
+    msgs.push({ ...doc.data(), id: doc.id });
+  });
+
+  msgs.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+  render(msgs);
+});
+</script>
+
+</body>
+</html>
     let rand = others[Math.floor(Math.random() * others.length)];
     currentRandom = rand;
 
@@ -119,7 +193,7 @@
     let reply = document.getElementById("replyText").value;
 
     if (!currentRandom) {
-      alert("ต้องสุ่มก่อน!");
+      alert("สุ่มก่อนนะ!");
       return;
     }
 
