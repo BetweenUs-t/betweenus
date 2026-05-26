@@ -3,8 +3,8 @@
 <head>
   <title>BetweenUs</title>
 
-  <!-- 🌿 ฟอนต์ -->
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- 🌿 FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -12,29 +12,220 @@
       background: #0f0f14;
       color: white;
       margin: 0;
-      overflow-x: hidden;
+      text-align: center;
     }
 
-    /* 🌫️ เงาฟีลคนกอดกัน */
+    /* 🌫️ เงาฟีลอบอุ่น */
     body::before {
       content: "";
       position: fixed;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05), transparent),
-                  radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent);
+      background:
+        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05), transparent),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent);
       z-index: -1;
     }
 
-    header {
-      padding: 15px;
-      text-align: center;
+    h2 {
       font-weight: 300;
-      font-size: 20px;
+      margin-top: 20px;
     }
 
-    .container {
-      max-width: 500px;
+    .card {
+      background: #1a1a22;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 15px auto;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    textarea {
+      width: 90%;
+      height: 80px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      font-family: 'Kanit';
+    }
+
+    button {
+      background: white;
+      color: black;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .msg {
+      background: #2a2a35;
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>BetweenUs 💭</h2>
+
+<!-- 📝 ระบาย -->
+<div class="card">
+  <h3>ระบาย</h3>
+  <textarea id="input"></textarea><br>
+  <button onclick="send()">ส่ง</button>
+</div>
+
+<!-- 🎁 รับข้อความ -->
+<div class="card">
+  <h3>ข้อความของคุณ</h3>
+  <div id="randomMsg" class="msg">กดรับข้อความ</div>
+  <button onclick="draw()">รับข้อความ</button>
+
+  <textarea id="reply" placeholder="เขียนกำลังใจ..."></textarea><br>
+  <button onclick="sendReply()">ส่งกำลังใจ</button>
+</div>
+
+<!-- 💌 inbox -->
+<div class="card">
+  <h3>กำลังใจที่คุณได้รับ</h3>
+  <div id="inbox"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  doc,
+  onSnapshot,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "👉 ใส่ของเธอ",
+  authDomain: "👉 ใส่ของเธอ",
+  projectId: "👉 ใส่ของเธอ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* 🧠 user */
+let myId = localStorage.getItem("myId");
+if (!myId) {
+  myId = "user_" + Math.random();
+  localStorage.setItem("myId", myId);
+}
+
+let currentId = null;
+
+/* 📤 ส่งข้อความ */
+window.send = async function() {
+  const text = document.getElementById("input").value;
+
+  if (!text) return;
+
+  await addDoc(collection(db, "messages"), {
+    content: text,
+    owner: myId,
+    pickedBy: null,
+    replies: [],
+    createdAt: new Date()
+  });
+
+  document.getElementById("input").value = "";
+}
+
+/* 🎯 UNIQUE DRAW */
+window.draw = async function() {
+  const snapshot = await getDocs(collection(db, "messages"));
+
+  let available = [];
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+
+    if (data.owner !== myId && !data.pickedBy) {
+      available.push({ ...data, id: docSnap.id });
+    }
+  });
+
+  if (available.length === 0) {
+    document.getElementById("randomMsg").innerText = "ยังไม่มีข้อความเหลือแล้ว 💭";
+    return;
+  }
+
+  const rand = available[Math.floor(Math.random() * available.length)];
+
+  currentId = rand.id;
+
+  // 🔒 lock
+  const ref = doc(db, "messages", rand.id);
+  await updateDoc(ref, {
+    pickedBy: myId
+  });
+
+  document.getElementById("randomMsg").innerText = rand.content;
+}
+
+/* 💌 ส่งกำลังใจ */
+window.sendReply = async function() {
+  const text = document.getElementById("reply").value;
+
+  if (!text || !currentId) return;
+
+  const ref = doc(db, "messages", currentId);
+
+  const snapshot = await getDocs(collection(db, "messages"));
+  let oldReplies = [];
+
+  snapshot.forEach(docSnap => {
+    if (docSnap.id === currentId) {
+      oldReplies = docSnap.data().replies || [];
+    }
+  });
+
+  await updateDoc(ref, {
+    replies: [...oldReplies, text]
+  });
+
+  document.getElementById("reply").value = "";
+}
+
+/* 🔔 inbox realtime */
+const q = query(collection(db, "messages"), where("owner", "==", myId));
+
+onSnapshot(q, (snapshot) => {
+  const box = document.getElementById("inbox");
+  box.innerHTML = "";
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+
+    if (data.replies) {
+      data.replies.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.innerText = "💛 " + r;
+        box.appendChild(div);
+      });
+    }
+  });
+});
+</script>
+
+</body>
+</html>      max-width: 500px;
       margin: auto;
       padding: 10px;
     }
