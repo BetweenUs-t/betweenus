@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BetweenUs</title>
+</head>
+
+<body style="text-align:center; font-family:sans-serif;">
+
+  <h2>กำลังแบกอะไรไว้อยู่? 🫨</h2>
+
+  <textarea id="message" rows="5" cols="40" placeholder="พิมพ์ได้เลย..."></textarea>
+  <br><br>
+
+  <button onclick="sendMessage()">ส่ง</button>
+  <button onclick="getRandomMessage()">สุ่มข้อความ 🎲</button>
+  <button onclick="viewMyMessage()">📩 ดูกำลังใจของฉัน</button>
+
+  <p id="randomText"></p>
+
+  <!-- ส่งกำลังใจ -->
+  <div id="encourageBox" style="display:none;">
+    <h3>ส่งกำลังใจ 💌</h3>
+    <textarea id="encourageText" rows="3" cols="40" placeholder="พิมพ์คำหนุนใจ..."></textarea>
+    <br><br>
+    <button onclick="sendEncouragement()">ส่งกำลังใจ</button>
+  </div>
+
+  <!-- กล่องของฉัน -->
+  <div id="myBox" style="margin-top:30px;"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { 
+      getFirestore, addDoc, collection, getDocs, 
+      doc, updateDoc, arrayUnion, getDoc 
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "betweenus-ae90e.firebaseapp.com",
+      projectId: "betweenus-ae90e",
+      storageBucket: "betweenus-ae90e.firebasestorage.app",
+      messagingSenderId: "294950831796",
+      appId: "1:294950831796:web:33251ef3088aa73610f9e1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let selectedDocId = null;
+
+    // ✅ ส่งข้อความระบาย
+    window.sendMessage = async function() {
+      const text = document.getElementById("message").value;
+
+      if (text.trim() === "") {
+        alert("พิมพ์ก่อนน้า");
+        return;
+      }
+
+      const docRef = await addDoc(collection(db, "messages"), {
+        content: text,
+        encouragements: [],
+        createdAt: new Date()
+      });
+
+      // ⭐ จำว่าอันนี้คือของเรา
+      localStorage.setItem("myMessageId", docRef.id);
+
+      alert("มีคนช่วยแบกแล้วนะ 🫀");
+      document.getElementById("message").value = "";
+    }
+
+    // 🎲 สุ่มข้อความ
+    window.getRandomMessage = async function() {
+      const querySnapshot = await getDocs(collection(db, "messages"));
+      const docs = [];
+
+      querySnapshot.forEach((docItem) => {
+        docs.push({
+          id: docItem.id,
+          ...docItem.data()
+        });
+      });
+
+      if (docs.length === 0) {
+        alert("ยังไม่มีข้อความเลย");
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * docs.length);
+      const randomDoc = docs[randomIndex];
+
+      selectedDocId = randomDoc.id;
+
+      document.getElementById("randomText").innerText = randomDoc.content;
+      document.getElementById("encourageBox").style.display = "block";
+    }
+
+    // 💌 ส่งกำลังใจ
+    window.sendEncouragement = async function() {
+      const text = document.getElementById("encourageText").value;
+
+      if (text.trim() === "") {
+        alert("พิมพ์กำลังใจก่อนน้า");
+        return;
+      }
+
+      const docRef = doc(db, "messages", selectedDocId);
+
+      await updateDoc(docRef, {
+        encouragements: arrayUnion(text)
+      });
+
+      alert("ส่งกำลังใจแล้ว 💖");
+      document.getElementById("encourageText").value = "";
+    }
+
+    // 📩 ดูข้อความของตัวเอง
+    window.viewMyMessage = async function() {
+      const myId = localStorage.getItem("myMessageId");
+
+      if (!myId) {
+        alert("ยังไม่มีข้อความของคุณนะ");
+        return;
+      }
+
+      const docRef = doc(db, "messages", myId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        let html = "<h3>ข้อความของคุณ</h3>";
+        html += "<p>" + data.content + "</p>";
+
+        html += "<h4>กำลังใจที่ได้รับ 💖</h4>";
+
+        if (data.encouragements.length === 0) {
+          html += "<p>ยังไม่มีใครส่งมา 🥺</p>";
+        } else {
+          data.encouragements.forEach(e => {
+            html += "<p>💌 " + e + "</p>";
+          });
+        }
+
+        document.getElementById("myBox").innerHTML = html;
+      }
+    }
+
+  </script>
+
+</body>
+</html>
