@@ -2,153 +2,154 @@
 <html>
 <head>
   <title>BetweenUs</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f0f14;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1a1a22;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 15px auto;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    textarea {
+      width: 90%;
+      height: 80px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      background: white;
+      color: black;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .msg {
+      background: #2a2a35;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
-<body style="text-align:center; font-family:sans-serif;">
+<body>
 
-  <h2>กำลังแบกอะไรไว้อยู่? 🫨</h2>
+  <h2>BetweenUs 💭</h2>
 
-  <textarea id="message" rows="5" cols="40" placeholder="พิมพ์ได้เลย..."></textarea>
-  <br><br>
-
-  <button onclick="sendMessage()">ส่ง</button>
-  <button onclick="getRandomMessage()">สุ่มข้อความ 🎲</button>
-  <button onclick="viewMyMessage()">📩 ดูกำลังใจของฉัน</button>
-
-  <p id="randomText"></p>
-
-  <!-- ส่งกำลังใจ -->
-  <div id="encourageBox" style="display:none;">
-    <h3>ส่งกำลังใจ 💌</h3>
-    <textarea id="encourageText" rows="3" cols="40" placeholder="พิมพ์คำหนุนใจ..."></textarea>
-    <br><br>
-    <button onclick="sendEncouragement()">ส่งกำลังใจ</button>
+  <div class="card">
+    <h3>อยากบ่นอะไรไหม?</h3>
+    <textarea id="inputText"></textarea><br>
+    <button onclick="sendMessage()">ส่งข้อความ</button>
   </div>
 
-  <!-- กล่องของฉัน -->
-  <div id="myBox" style="margin-top:30px;"></div>
+  <div class="card">
+    <h3>สุ่มข้อความจากคนอื่น</h3>
+    <button onclick="getRandom()">สุ่ม</button>
+    <div id="randomBox"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { 
-      getFirestore, addDoc, collection, getDocs, 
-      doc, updateDoc, arrayUnion, getDoc 
-    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    <textarea id="replyText" placeholder="พิมพ์กำลังใจ..."></textarea><br>
+    <button onclick="sendReply()">ส่งกำลังใจ</button>
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "betweenus-ae90e.firebaseapp.com",
-      projectId: "betweenus-ae90e",
-      storageBucket: "betweenus-ae90e.firebasestorage.app",
-      messagingSenderId: "294950831796",
-      appId: "1:294950831796:web:33251ef3088aa73610f9e1"
-    };
+  <div class="card">
+    <h3>📥 ก๊อกๆ มีคนฝากมา</h3>
+    <div id="inbox"></div>
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+<script>
+  let myId = localStorage.getItem("myId");
+  if (!myId) {
+    myId = "user_" + Math.random();
+    localStorage.setItem("myId", myId);
+  }
 
-    let selectedDocId = null;
+  function sendMessage() {
+    let text = document.getElementById("inputText").value;
 
-    // ✅ ส่งข้อความระบาย
-    window.sendMessage = async function() {
-      const text = document.getElementById("message").value;
+    let messages = JSON.parse(localStorage.getItem("messages")) || [];
+    messages.push({
+      text: text,
+      id: Date.now(),
+      owner: myId
+    });
 
-      if (text.trim() === "") {
-        alert("พิมพ์ก่อนน้า");
-        return;
-      }
+    localStorage.setItem("messages", JSON.stringify(messages));
+    alert("ส่งแล้ว🫀");
+  }
 
-      const docRef = await addDoc(collection(db, "messages"), {
-        content: text,
-        encouragements: [],
-        createdAt: new Date()
-      });
+  let currentRandom = null;
 
-      // ⭐ จำว่าอันนี้คือของเรา
-      localStorage.setItem("myMessageId", docRef.id);
+  function getRandom() {
+    let messages = JSON.parse(localStorage.getItem("messages")) || [];
 
-      alert("มีคนช่วยแบกแล้วนะ 🫀");
-      document.getElementById("message").value = "";
+    let others = messages.filter(m => m.owner !== myId);
+
+    if (others.length === 0) {
+      document.getElementById("randomBox").innerText = "ยังไม่มีข้อความจากคนอื่น";
+      return;
     }
 
-    // 🎲 สุ่มข้อความ
-    window.getRandomMessage = async function() {
-      const querySnapshot = await getDocs(collection(db, "messages"));
-      const docs = [];
+    let rand = others[Math.floor(Math.random() * others.length)];
+    currentRandom = rand;
 
-      querySnapshot.forEach((docItem) => {
-        docs.push({
-          id: docItem.id,
-          ...docItem.data()
-        });
-      });
+    document.getElementById("randomBox").innerText = rand.text;
+  }
 
-      if (docs.length === 0) {
-        alert("ยังไม่มีข้อความเลย");
-        return;
-      }
+  function sendReply() {
+    let reply = document.getElementById("replyText").value;
 
-      const randomIndex = Math.floor(Math.random() * docs.length);
-      const randomDoc = docs[randomIndex];
-
-      selectedDocId = randomDoc.id;
-
-      document.getElementById("randomText").innerText = randomDoc.content;
-      document.getElementById("encourageBox").style.display = "block";
+    if (!currentRandom) {
+      alert("ต้องสุ่มก่อน!");
+      return;
     }
 
-    // 💌 ส่งกำลังใจ
-    window.sendEncouragement = async function() {
-      const text = document.getElementById("encourageText").value;
+    let inbox = JSON.parse(localStorage.getItem("inbox_" + currentRandom.owner)) || [];
 
-      if (text.trim() === "") {
-        alert("พิมพ์กำลังใจก่อนน้า");
-        return;
-      }
+    inbox.push({
+      text: reply
+    });
 
-      const docRef = doc(db, "messages", selectedDocId);
+    localStorage.setItem("inbox_" + currentRandom.owner, JSON.stringify(inbox));
 
-      await updateDoc(docRef, {
-        encouragements: arrayUnion(text)
-      });
+    alert("หนุนใจแล้วนะ🫀");
+  }
 
-      alert("ส่งกำลังใจแล้ว 💖");
-      document.getElementById("encourageText").value = "";
-    }
+  function loadInbox() {
+    let inbox = JSON.parse(localStorage.getItem("inbox_" + myId)) || [];
 
-    // 📩 ดูข้อความของตัวเอง
-    window.viewMyMessage = async function() {
-      const myId = localStorage.getItem("myMessageId");
+    let box = document.getElementById("inbox");
+    box.innerHTML = "";
 
-      if (!myId) {
-        alert("ยังไม่มีข้อความของคุณนะ");
-        return;
-      }
+    inbox.forEach(msg => {
+      let div = document.createElement("div");
+      div.className = "msg";
+      div.innerText = msg.text;
+      box.appendChild(div);
+    });
+  }
 
-      const docRef = doc(db, "messages", myId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-
-        let html = "<h3>ข้อความของคุณ</h3>";
-        html += "<p>" + data.content + "</p>";
-
-        html += "<h4>กำลังใจที่ได้รับ 💖</h4>";
-
-        if (data.encouragements.length === 0) {
-          html += "<p>ยังไม่มีใครส่งมา 🥺</p>";
-        } else {
-          data.encouragements.forEach(e => {
-            html += "<p>💌 " + e + "</p>";
-          });
-        }
-
-        document.getElementById("myBox").innerHTML = html;
-      }
-    }
-
-  </script>
+  loadInbox();
+</script>
 
 </body>
 </html>
