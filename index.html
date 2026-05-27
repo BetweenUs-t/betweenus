@@ -3,46 +3,33 @@
 <head>
   <title>BetweenUs</title>
 
-  <!-- 🔤 FONT -->
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400&display=swap" rel="stylesheet">
 
-  <!-- 🔥 Firebase (เวอร์ชันแก้บัค) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
   <style>
     body {
       font-family: 'Kanit', sans-serif;
-      background: #0f0f14;
-      color: white;
       margin: 0;
       text-align: center;
-    }
-
-    /* เงาคนกอด (ฟีล abstract) */
-    body::before {
-      content: "";
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background:
-        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05), transparent),
-        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent);
-      z-index: -1;
+      background: #0f0f14;
+      color: white;
     }
 
     .card {
-      background: #1a1a22;
-      padding: 20px;
-      border-radius: 16px;
       margin: 15px auto;
+      padding: 20px;
       width: 90%;
       max-width: 400px;
+      border-radius: 16px;
+      background: #1a1a22;
     }
 
     textarea {
       width: 90%;
-      height: 80px;
+      height: 70px;
       border-radius: 10px;
       border: none;
       padding: 10px;
@@ -50,20 +37,18 @@
     }
 
     button {
-      background: white;
-      color: black;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 20px;
       margin-top: 10px;
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: none;
       cursor: pointer;
     }
 
     .msg {
-      background: #2a2a35;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 10px;
       margin-top: 10px;
+      border-radius: 12px;
+      background: #2a2a35;
     }
   </style>
 </head>
@@ -73,27 +58,33 @@
 <h2>BetweenUs 💭</h2>
 
 <div class="card">
-  <h3>ระบาย</h3>
+  <button id="loginBtn" onclick="login()">Login with Google</button>
+  <p id="user">กำลังโหลด...</p>
+</div>
+
+<div class="card">
+  <input id="group" placeholder="ชื่อกลุ่ม"><br>
+  <button onclick="joinGroup()">เข้ากลุ่ม</button>
+</div>
+
+<div class="card">
   <textarea id="input"></textarea><br>
   <button onclick="send()">ส่ง</button>
 </div>
 
 <div class="card">
-  <h3>ข้อความของคุณ</h3>
-  <div id="randomMsg" class="msg">กดรับข้อความ</div>
-  <button onclick="draw()">รับข้อความ</button>
+  <div id="randomMsg" class="msg">...</div>
+  <button onclick="draw()">สุ่ม</button>
 
-  <textarea id="reply" placeholder="เขียนกำลังใจ..."></textarea><br>
-  <button onclick="sendReply()">ส่งกำลังใจ</button>
+  <textarea id="reply"></textarea>
+  <button onclick="sendReply()">ตอบ</button>
 </div>
 
 <div class="card">
-  <h3>กำลังใจที่คุณได้รับ</h3>
   <div id="inbox"></div>
 </div>
 
 <script>
-/* 🔥 CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
   authDomain: "betweenus-ae90e.firebaseapp.com",
@@ -102,114 +93,151 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-/* 🧠 USER */
-let myId = localStorage.getItem("myId");
-if (!myId) {
-  myId = "user_" + Math.random();
-  localStorage.setItem("myId", myId);
-}
-
+let myId = null;
+let groupId = null;
 let currentId = null;
 
-/* 📤 ส่งข้อความ */
+/* 🔐 LOGIN */
+function login() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider);
+}
+
+/* 🔥 สำคัญสุด: เช็คสถานะ login ตอนเข้าเว็บ */
+auth.onAuthStateChanged(user => {
+  if (user) {
+    myId = user.uid;
+
+    document.getElementById("user").innerText = "👤 " + user.displayName;
+
+    document.getElementById("loginBtn").style.display = "none";
+  } else {
+    document.getElementById("user").innerText = "ยังไม่ได้ login";
+    document.getElementById("loginBtn").style.display = "inline-block";
+  }
+});
+
+/* 👥 GROUP */
+function joinGroup() {
+  if (!myId) return alert("login ก่อน");
+
+  groupId = document.getElementById("group").value;
+  if (!groupId) return alert("ใส่ชื่อกลุ่ม");
+
+  alert("เข้ากลุ่ม: " + groupId);
+
+  db.collection("messages")
+    .where("group", "==", groupId)
+    .onSnapshot(updateInbox);
+}
+
+/* 📤 SEND */
 function send() {
   const text = document.getElementById("input").value.trim();
 
-  if (!text) {
-    alert("พิมพ์ก่อนนน");
-    return;
-  }
+  if (!myId) return alert("login ก่อน");
+  if (!groupId) return alert("เข้ากลุ่มก่อน");
+  if (!text) return alert("พิมพ์ก่อน");
 
   db.collection("messages").add({
     content: text,
     owner: myId,
+    group: groupId,
     pickedBy: null,
     replies: [],
-    createdAt: Date.now()
-  })
-  .then(() => {
-    document.getElementById("input").value = "";
-    alert("ส่งแล้ว!");
-  })
-  .catch(err => {
-    console.error(err);
-    alert("ERROR: " + err.message);
+    thanks: 0
   });
+
+  document.getElementById("input").value = "";
 }
 
-/* 🎯 สุ่มข้อความ (ไม่ซ้ำ) */
+/* 🎯 DRAW */
 function draw() {
-  db.collection("messages").get().then(snapshot => {
+  if (!groupId) return alert("เข้ากลุ่มก่อน");
 
-    let available = [];
+  db.collection("messages")
+    .where("group", "==", groupId)
+    .get()
+    .then(snap => {
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (data.owner !== myId && !data.pickedBy) {
-        available.push({ ...data, id: doc.id });
+      let list = [];
+
+      snap.forEach(doc => {
+        let d = doc.data();
+        if (d.owner !== myId && !d.pickedBy) {
+          list.push({...d, id: doc.id});
+        }
+      });
+
+      if (list.length === 0) {
+        document.getElementById("randomMsg").innerText = "ไม่มีข้อความ";
+        return;
       }
+
+      let r = list[Math.floor(Math.random()*list.length)];
+      currentId = r.id;
+
+      db.collection("messages").doc(r.id).update({
+        pickedBy: myId
+      });
+
+      document.getElementById("randomMsg").innerText = r.content;
     });
-
-    if (available.length === 0) {
-      document.getElementById("randomMsg").innerText = "ไม่มีข้อความแล้ว 💭";
-      return;
-    }
-
-    const rand = available[Math.floor(Math.random() * available.length)];
-    currentId = rand.id;
-
-    db.collection("messages").doc(rand.id).update({
-      pickedBy: myId
-    });
-
-    document.getElementById("randomMsg").innerText = rand.content;
-  });
 }
 
-/* 💌 ส่งกำลังใจ */
+/* 💌 REPLY */
 function sendReply() {
-  const text = document.getElementById("reply").value.trim();
+  const text = document.getElementById("reply").value;
 
-  if (!text || !currentId) {
-    alert("ยังไม่มีข้อความให้ตอบ");
-    return;
-  }
+  if (!text || !currentId) return alert("ยังไม่มีข้อความให้ตอบ");
 
-  const ref = db.collection("messages").doc(currentId);
+  let ref = db.collection("messages").doc(currentId);
 
   ref.get().then(doc => {
     let old = doc.data().replies || [];
-
     ref.update({
       replies: [...old, text]
-    }).then(() => {
-      document.getElementById("reply").value = "";
-      alert("ส่งกำลังใจแล้ว 💛");
     });
+  });
+
+  document.getElementById("reply").value = "";
+}
+
+/* ❤️ THANK */
+function sendThanks(id) {
+  let ref = db.collection("messages").doc(id);
+
+  ref.get().then(doc => {
+    let t = doc.data().thanks || 0;
+    ref.update({ thanks: t + 1 });
   });
 }
 
-/* 🔔 realtime inbox */
-db.collection("messages")
-.where("owner", "==", myId)
-.onSnapshot(snapshot => {
+/* 🔔 INBOX */
+function updateInbox(snapshot) {
   const box = document.getElementById("inbox");
   box.innerHTML = "";
 
   snapshot.forEach(doc => {
-    const data = doc.data();
+    let d = doc.data();
 
-    if (data.replies) {
-      data.replies.forEach(r => {
-        const div = document.createElement("div");
+    if (d.owner === myId && d.replies.length > 0) {
+
+      d.replies.forEach(r => {
+        let div = document.createElement("div");
         div.className = "msg";
-        div.innerText = "💛 " + r;
+        div.innerHTML = `
+          💛 ${r}<br>
+          ❤️ ${d.thanks}
+          <button onclick="sendThanks('${doc.id}')">ขอบคุณ</button>
+        `;
         box.appendChild(div);
       });
     }
   });
-});
+}
 </script>
 
 </body>
