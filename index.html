@@ -3,7 +3,6 @@
 <head>
   <title>BetweenUs</title>
 
-  <!-- 🌿 FONT -->
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
@@ -15,7 +14,6 @@
       text-align: center;
     }
 
-    /* 🌫️ เงาฟีลอบอุ่น */
     body::before {
       content: "";
       position: fixed;
@@ -25,11 +23,6 @@
         radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05), transparent),
         radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent);
       z-index: -1;
-    }
-
-    h2 {
-      font-weight: 300;
-      margin-top: 20px;
     }
 
     .card {
@@ -65,7 +58,6 @@
       padding: 12px;
       border-radius: 12px;
       margin-top: 10px;
-      font-size: 14px;
     }
   </style>
 </head>
@@ -74,14 +66,12 @@
 
 <h2>BetweenUs 💭</h2>
 
-<!-- 📝 ระบาย -->
 <div class="card">
   <h3>ระบาย</h3>
   <textarea id="input"></textarea><br>
   <button onclick="send()">ส่ง</button>
 </div>
 
-<!-- 🎁 รับข้อความ -->
 <div class="card">
   <h3>ข้อความของคุณ</h3>
   <div id="randomMsg" class="msg">กดรับข้อความ</div>
@@ -91,7 +81,6 @@
   <button onclick="sendReply()">ส่งกำลังใจ</button>
 </div>
 
-<!-- 💌 inbox -->
 <div class="card">
   <h3>กำลังใจที่คุณได้รับ</h3>
   <div id="inbox"></div>
@@ -111,15 +100,17 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
+/* 🔥 CONFIG ของเธอ */
 const firebaseConfig = {
-  piKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
+  apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
   authDomain: "betweenus-ae90e.firebaseapp.com",
-  projectId: "betweenus-ae90e",
+  projectId: "betweenus-ae90e"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* 🧠 user */
+/* 🧠 user id */
 let myId = localStorage.getItem("myId");
 if (!myId) {
   myId = "user_" + Math.random();
@@ -128,78 +119,102 @@ if (!myId) {
 
 let currentId = null;
 
-/* 📤 ส่งข้อความ */
+/* 📤 ส่ง (แก้บัคแล้ว) */
 window.send = async function() {
-  const text = document.getElementById("input").value;
+  const text = document.getElementById("input").value.trim();
 
-  if (!text) return;
-
-  await addDoc(collection(db, "messages"), {
-    content: text,
-    owner: myId,
-    pickedBy: null,
-    replies: [],
-    createdAt: new Date()
-  });
-
-  document.getElementById("input").value = "";
-}
-
-/* 🎯 UNIQUE DRAW */
-window.draw = async function() {
-  const snapshot = await getDocs(collection(db, "messages"));
-
-  let available = [];
-
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-
-    if (data.owner !== myId && !data.pickedBy) {
-      available.push({ ...data, id: docSnap.id });
-    }
-  });
-
-  if (available.length === 0) {
-    document.getElementById("randomMsg").innerText = "ยังไม่มีข้อความเหลือแล้ว 💭";
+  if (!text) {
+    alert("พิมพ์ก่อนนน");
     return;
   }
 
-  const rand = available[Math.floor(Math.random() * available.length)];
+  try {
+    await addDoc(collection(db, "messages"), {
+      content: text,
+      owner: myId,
+      pickedBy: null,
+      replies: [],
+      createdAt: Date.now()
+    });
 
-  currentId = rand.id;
+    document.getElementById("input").value = "";
+    alert("ส่งแล้ว!");
+  } catch (e) {
+    console.error("SEND ERROR:", e);
+    alert("ส่งไม่สำเร็จ ดู console");
+  }
+};
 
-  // 🔒 lock
-  const ref = doc(db, "messages", rand.id);
-  await updateDoc(ref, {
-    pickedBy: myId
-  });
+/* 🎯 สุ่มแบบไม่ซ้ำ */
+window.draw = async function() {
+  try {
+    const snapshot = await getDocs(collection(db, "messages"));
 
-  document.getElementById("randomMsg").innerText = rand.content;
-}
+    let available = [];
 
-/* 💌 ส่งกำลังใจ */
-window.sendReply = async function() {
-  const text = document.getElementById("reply").value;
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
 
-  if (!text || !currentId) return;
+      if (data.owner !== myId && !data.pickedBy) {
+        available.push({ ...data, id: docSnap.id });
+      }
+    });
 
-  const ref = doc(db, "messages", currentId);
-
-  const snapshot = await getDocs(collection(db, "messages"));
-  let oldReplies = [];
-
-  snapshot.forEach(docSnap => {
-    if (docSnap.id === currentId) {
-      oldReplies = docSnap.data().replies || [];
+    if (available.length === 0) {
+      document.getElementById("randomMsg").innerText = "ไม่มีข้อความแล้ว 💭";
+      return;
     }
-  });
 
-  await updateDoc(ref, {
-    replies: [...oldReplies, text]
-  });
+    const rand = available[Math.floor(Math.random() * available.length)];
+    currentId = rand.id;
 
-  document.getElementById("reply").value = "";
-}
+    const ref = doc(db, "messages", rand.id);
+
+    await updateDoc(ref, {
+      pickedBy: myId
+    });
+
+    document.getElementById("randomMsg").innerText = rand.content;
+
+  } catch (e) {
+    console.error("DRAW ERROR:", e);
+    alert("สุ่มพัง ดู console");
+  }
+};
+
+/* 💌 ส่งกำลังใจ (แก้บัคแล้ว) */
+window.sendReply = async function() {
+  const text = document.getElementById("reply").value.trim();
+
+  if (!text || !currentId) {
+    alert("ยังไม่มีข้อความให้ตอบ");
+    return;
+  }
+
+  try {
+    const ref = doc(db, "messages", currentId);
+
+    const snapshot = await getDocs(collection(db, "messages"));
+    let oldReplies = [];
+
+    snapshot.forEach(docSnap => {
+      if (docSnap.id === currentId) {
+        oldReplies = docSnap.data().replies || [];
+      }
+    });
+
+    await updateDoc(ref, {
+      replies: [...oldReplies, text]
+    });
+
+    document.getElementById("reply").value = "";
+    alert("ส่งกำลังใจแล้ว 💛");
+
+  } catch (e) {
+    console.error("REPLY ERROR:", e);
+    alert("ส่งกำลังใจไม่สำเร็จ");
+  }
+};
 
 /* 🔔 inbox realtime */
 const q = query(collection(db, "messages"), where("owner", "==", myId));
@@ -211,7 +226,7 @@ onSnapshot(q, (snapshot) => {
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
 
-    if (data.replies) {
+    if (data.replies && data.replies.length > 0) {
       data.replies.forEach(r => {
         const div = document.createElement("div");
         div.className = "msg";
