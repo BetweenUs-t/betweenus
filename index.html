@@ -1,55 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
+  <meta charset="UTF-8">
   <title>BetweenUs</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400&display=swap" rel="stylesheet">
+  <!-- ✅ PWA -->
+  <link rel="manifest" href="manifest.json">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <!-- ✅ Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Kanit', sans-serif;
-      margin: 0;
-      text-align: center;
       background: #0f0f14;
       color: white;
+      text-align: center;
+      padding: 20px;
+      transition: 0.3s;
+    }
+
+    .light {
+      background: #f5f5f5;
+      color: black;
+    }
+
+    h2 {
+      margin-bottom: 5px;
     }
 
     .card {
-      margin: 15px auto;
+      background: #1a1a22;
       padding: 20px;
+      border-radius: 16px;
+      margin: 15px auto;
       width: 90%;
       max-width: 400px;
-      border-radius: 16px;
-      background: #1a1a22;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .light .card {
+      background: white;
+    }
+
+    /* 👥 เงาคนกอดกัน */
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.08), transparent);
+      top: -50px;
+      right: -50px;
+      border-radius: 50%;
     }
 
     textarea {
       width: 90%;
-      height: 70px;
+      height: 80px;
       border-radius: 10px;
       border: none;
       padding: 10px;
-      font-family: 'Kanit';
+      margin-top: 10px;
+      font-family: 'Kanit', sans-serif;
     }
 
     button {
-      margin-top: 10px;
-      padding: 10px 16px;
-      border-radius: 20px;
+      background: white;
+      color: black;
       border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      margin-top: 10px;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.8;
     }
 
     .msg {
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 12px;
       background: #2a2a35;
+      padding: 12px;
+      border-radius: 15px;
+      margin-top: 10px;
+      text-align: left;
+      animation: fadeIn 0.3s ease;
     }
+
+    .light .msg {
+      background: #e0e0e0;
+    }
+
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(10px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+
+    /* ❤️ ปุ่มขอบคุณ */
+    .heart {
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.2s;
+    }
+
+    .heart:active {
+      transform: scale(1.5);
+    }
+
+    /* 🔔 notification bubble */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 20px;
+      display: none;
+    }
+
   </style>
 </head>
 
@@ -57,187 +130,73 @@
 
 <h2>BetweenUs 💭</h2>
 
-<div class="card">
-  <button id="loginBtn" onclick="login()">Login with Google</button>
-  <p id="user">กำลังโหลด...</p>
-</div>
+<button onclick="toggleTheme()">🎨 เปลี่ยนธีม</button>
 
 <div class="card">
-  <input id="group" placeholder="ชื่อกลุ่ม"><br>
-  <button onclick="joinGroup()">เข้ากลุ่ม</button>
-</div>
-
-<div class="card">
+  <h3>ระบาย</h3>
   <textarea id="input"></textarea><br>
   <button onclick="send()">ส่ง</button>
 </div>
 
 <div class="card">
-  <div id="randomMsg" class="msg">...</div>
-  <button onclick="draw()">สุ่ม</button>
-
-  <textarea id="reply"></textarea>
-  <button onclick="sendReply()">ตอบ</button>
+  <h3>สุ่มกำลังใจ</h3>
+  <button onclick="randomMsg()">สุ่ม</button>
+  <div id="result"></div>
 </div>
 
-<div class="card">
-  <div id="inbox"></div>
-</div>
+<div class="toast" id="toast">📩 มีข้อความใหม่</div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
-  authDomain: "betweenus-ae90e.firebaseapp.com",
-  projectId: "betweenus-ae90e"
-};
+  let messages = JSON.parse(localStorage.getItem("msgs")) || [];
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+  function send() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
 
-let myId = null;
-let groupId = null;
-let currentId = null;
+    if (!text) return;
 
-/* 🔐 LOGIN */
-function login() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider);
-}
+    messages.push(text);
+    localStorage.setItem("msgs", JSON.stringify(messages));
 
-/* 🔥 สำคัญสุด: เช็คสถานะ login ตอนเข้าเว็บ */
-auth.onAuthStateChanged(user => {
-  if (user) {
-    myId = user.uid;
+    input.value = "";
 
-    document.getElementById("user").innerText = "👤 " + user.displayName;
-
-    document.getElementById("loginBtn").style.display = "none";
-  } else {
-    document.getElementById("user").innerText = "ยังไม่ได้ login";
-    document.getElementById("loginBtn").style.display = "inline-block";
+    showToast("ส่งแล้ว 💌");
   }
-});
 
-/* 👥 GROUP */
-function joinGroup() {
-  if (!myId) return alert("login ก่อน");
-
-  groupId = document.getElementById("group").value;
-  if (!groupId) return alert("ใส่ชื่อกลุ่ม");
-
-  alert("เข้ากลุ่ม: " + groupId);
-
-  db.collection("messages")
-    .where("group", "==", groupId)
-    .onSnapshot(updateInbox);
-}
-
-/* 📤 SEND */
-function send() {
-  const text = document.getElementById("input").value.trim();
-
-  if (!myId) return alert("login ก่อน");
-  if (!groupId) return alert("เข้ากลุ่มก่อน");
-  if (!text) return alert("พิมพ์ก่อน");
-
-  db.collection("messages").add({
-    content: text,
-    owner: myId,
-    group: groupId,
-    pickedBy: null,
-    replies: [],
-    thanks: 0
-  });
-
-  document.getElementById("input").value = "";
-}
-
-/* 🎯 DRAW */
-function draw() {
-  if (!groupId) return alert("เข้ากลุ่มก่อน");
-
-  db.collection("messages")
-    .where("group", "==", groupId)
-    .get()
-    .then(snap => {
-
-      let list = [];
-
-      snap.forEach(doc => {
-        let d = doc.data();
-        if (d.owner !== myId && !d.pickedBy) {
-          list.push({...d, id: doc.id});
-        }
-      });
-
-      if (list.length === 0) {
-        document.getElementById("randomMsg").innerText = "ไม่มีข้อความ";
-        return;
-      }
-
-      let r = list[Math.floor(Math.random()*list.length)];
-      currentId = r.id;
-
-      db.collection("messages").doc(r.id).update({
-        pickedBy: myId
-      });
-
-      document.getElementById("randomMsg").innerText = r.content;
-    });
-}
-
-/* 💌 REPLY */
-function sendReply() {
-  const text = document.getElementById("reply").value;
-
-  if (!text || !currentId) return alert("ยังไม่มีข้อความให้ตอบ");
-
-  let ref = db.collection("messages").doc(currentId);
-
-  ref.get().then(doc => {
-    let old = doc.data().replies || [];
-    ref.update({
-      replies: [...old, text]
-    });
-  });
-
-  document.getElementById("reply").value = "";
-}
-
-/* ❤️ THANK */
-function sendThanks(id) {
-  let ref = db.collection("messages").doc(id);
-
-  ref.get().then(doc => {
-    let t = doc.data().thanks || 0;
-    ref.update({ thanks: t + 1 });
-  });
-}
-
-/* 🔔 INBOX */
-function updateInbox(snapshot) {
-  const box = document.getElementById("inbox");
-  box.innerHTML = "";
-
-  snapshot.forEach(doc => {
-    let d = doc.data();
-
-    if (d.owner === myId && d.replies.length > 0) {
-
-      d.replies.forEach(r => {
-        let div = document.createElement("div");
-        div.className = "msg";
-        div.innerHTML = `
-          💛 ${r}<br>
-          ❤️ ${d.thanks}
-          <button onclick="sendThanks('${doc.id}')">ขอบคุณ</button>
-        `;
-        box.appendChild(div);
-      });
+  function randomMsg() {
+    if (messages.length === 0) {
+      alert("ยังไม่มีข้อความ");
+      return;
     }
-  });
-}
+
+    const index = Math.floor(Math.random() * messages.length);
+    const msg = messages[index];
+
+    document.getElementById("result").innerHTML = `
+      <div class="msg">
+        ${msg}
+        <div class="heart" onclick="thank()">❤️</div>
+      </div>
+    `;
+  }
+
+  function thank() {
+    showToast("ขอบคุณแล้ว ❤️");
+  }
+
+  function showToast(text) {
+    const toast = document.getElementById("toast");
+    toast.innerText = text;
+    toast.style.display = "block";
+
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 2000);
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle("light");
+  }
 </script>
 
 </body>
