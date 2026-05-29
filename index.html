@@ -2,201 +2,709 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>BetweenUs</title>
-
-  <!-- ✅ PWA -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- ✅ Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
-
+  <meta name="theme-color" content="#0a0a10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a10;
+      --surface: #13131c;
+      --surface2: #1c1c28;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0f0f5;
+      --muted: rgba(240,240,245,0.45);
+      --accent: #a89cff;
+      --accent2: #7ecfb3;
+      --verse-bg: #1a1426;
+      --verse-border: rgba(168,156,255,0.3);
+    }
+
     body {
       font-family: 'Kanit', sans-serif;
-      background: #0f0f14;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      transition: 0.3s;
+      font-weight: 300;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 80px;
     }
 
-    .light {
-      background: #f5f5f5;
-      color: black;
+    /* HEADER */
+    .header {
+      padding: 24px 20px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.5px solid var(--border);
     }
 
-    h2 {
-      margin-bottom: 5px;
+    .logo {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
-    .card {
-      background: #1a1a22;
-      padding: 20px;
-      border-radius: 16px;
-      margin: 15px auto;
-      width: 90%;
-      max-width: 400px;
-      position: relative;
-      overflow: hidden;
-    }
+    .logo span { color: var(--accent); }
 
-    .light .card {
-      background: white;
-    }
-
-    /* 👥 เงาคนกอดกัน */
-    .card::before {
-      content: "";
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(255,255,255,0.08), transparent);
-      top: -50px;
-      right: -50px;
+    .user-dot {
+      width: 32px; height: 32px;
       border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
     }
 
-    textarea {
-      width: 90%;
-      height: 80px;
-      border-radius: 10px;
-      border: none;
-      padding: 10px;
-      margin-top: 10px;
+    /* TABS */
+    .tabs {
+      display: flex;
+      padding: 12px 20px 0;
+      gap: 4px;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 4px;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* PAGES */
+    .page { display: none; padding: 20px; max-width: 480px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* TEXTAREA */
+    .vent-box {
+      width: 100%;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      color: var(--text);
       font-family: 'Kanit', sans-serif;
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.7;
+      resize: none;
+      min-height: 140px;
+      transition: border-color 0.2s;
+      outline: none;
     }
 
-    button {
-      background: white;
-      color: black;
+    .vent-box:focus { border-color: rgba(168,156,255,0.4); }
+    .vent-box::placeholder { color: var(--muted); }
+
+    /* SEND BUTTON */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 50px;
       border: none;
-      padding: 10px 18px;
-      border-radius: 20px;
-      margin-top: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 400;
+      font-size: 15px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: all 0.2s;
+      margin-top: 12px;
     }
 
-    button:hover {
-      opacity: 0.8;
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a10;
     }
 
-    .msg {
-      background: #2a2a35;
-      padding: 12px;
-      border-radius: 15px;
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent2);
+      border: 1px solid rgba(126,207,179,0.3);
+    }
+
+    .btn-outline:hover { background: rgba(126,207,179,0.06); }
+
+    /* CHAR COUNT */
+    .char-count {
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* FEED CARDS */
+    .feed-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 40px 20px;
+    }
+
+    .vent-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .vent-card .vent-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .vent-card .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-top: 10px;
-      text-align: left;
-      animation: fadeIn 0.3s ease;
     }
 
-    .light .msg {
-      background: #e0e0e0;
+    .vent-card .time {
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    @keyframes fadeIn {
-      from {opacity:0; transform: translateY(10px);}
-      to {opacity:1; transform: translateY(0);}
-    }
-
-    /* ❤️ ปุ่มขอบคุณ */
-    .heart {
-      cursor: pointer;
-      font-size: 18px;
-      transition: 0.2s;
-    }
-
-    .heart:active {
-      transform: scale(1.5);
-    }
-
-    /* 🔔 notification bubble */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      color: black;
-      padding: 10px 20px;
+    .encourage-btn {
+      font-size: 12px;
+      font-weight: 400;
+      font-family: 'Kanit', sans-serif;
+      background: transparent;
+      border: 0.5px solid var(--border);
+      color: var(--accent2);
+      padding: 5px 12px;
       border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .encourage-btn:hover { background: rgba(126,207,179,0.08); }
+
+    /* ENCOURAGE PANEL */
+    .encourage-panel {
+      margin-top: 12px;
       display: none;
     }
 
-  </style>
-</head>
+    .encourage-panel.open { display: block; }
 
-<body>
-
-<h2>BetweenUs 💭</h2>
-
-<button onclick="toggleTheme()">🎨 เปลี่ยนธีม</button>
-
-<div class="card">
-  <h3>ระบาย</h3>
-  <textarea id="input"></textarea><br>
-  <button onclick="send()">ส่ง</button>
-</div>
-
-<div class="card">
-  <h3>สุ่มกำลังใจ</h3>
-  <button onclick="randomMsg()">สุ่ม</button>
-  <div id="result"></div>
-</div>
-
-<div class="toast" id="toast">📩 มีข้อความใหม่</div>
-
-<script>
-  let messages = JSON.parse(localStorage.getItem("msgs")) || [];
-
-  function send() {
-    const input = document.getElementById("input");
-    const text = input.value.trim();
-
-    if (!text) return;
-
-    messages.push(text);
-    localStorage.setItem("msgs", JSON.stringify(messages));
-
-    input.value = "";
-
-    showToast("ส่งแล้ว 💌");
-  }
-
-  function randomMsg() {
-    if (messages.length === 0) {
-      alert("ยังไม่มีข้อความ");
-      return;
+    .encourage-panel textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      resize: none;
+      min-height: 80px;
+      outline: none;
     }
 
-    const index = Math.floor(Math.random() * messages.length);
-    const msg = messages[index];
+    .encourage-panel textarea:focus { border-color: rgba(126,207,179,0.3); }
 
-    document.getElementById("result").innerHTML = `
-      <div class="msg">
-        ${msg}
-        <div class="heart" onclick="thank()">❤️</div>
-      </div>
-    `;
+    .send-encourage-btn {
+      margin-top: 8px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      background: var(--accent2);
+      color: #0a0a10;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .send-encourage-btn:hover { opacity: 0.8; }
+    .send-encourage-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* RECEIVED MESSAGES */
+    .inbox-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .inbox-card .from-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .inbox-card .encourage-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    /* VERSE CARD */
+    .verse-card {
+      background: var(--verse-bg);
+      border: 0.5px solid var(--verse-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-top: 12px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .verse-card .verse-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    .verse-card .verse-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(240,240,245,0.85);
+    }
+
+    .verse-card .verse-ref {
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 8px;
+      opacity: 0.6;
+    }
+
+    .verse-loading {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      color: var(--text);
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 13px;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* MY VENTS label */
+    .my-vent-label {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(168,156,255,0.12);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    /* LOADING SPINNER */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ABOUT / INTRO */
+    .intro-box {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .intro-box h3 {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .intro-box p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .dot-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .dot:nth-child(1) { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Between<span>Us</span> 💭</div>
+  <div class="user-dot" id="userDot">?</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('vent')">ระบาย</div>
+  <div class="tab" onclick="switchTab('feed')">หนุนใจ</div>
+  <div class="tab" onclick="switchTab('inbox')">กล่องรับ</div>
+</div>
+
+<!-- TAB: VENT -->
+<div class="page active" id="page-vent">
+  <div class="intro-box" style="margin-top:20px">
+    <h3>พื้นที่ของเธอ</h3>
+    <p>ระบายได้เลย ไม่มีชื่อ ไม่มีใครรู้ว่าเป็นของใคร แต่ทุกคนจะได้อ่านและหนุนใจ</p>
+    <div class="dot-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+
+  <div class="section-label">อยากระบายอะไร?</div>
+  <textarea class="vent-box" id="ventText" placeholder="วันนี้หนักใจเรื่อง..." maxlength="500" oninput="updateCount()"></textarea>
+  <div class="char-count"><span id="charCount">0</span>/500</div>
+  <button class="btn btn-primary" id="sendBtn" onclick="sendVent()" disabled>ส่ง</button>
+</div>
+
+<!-- TAB: FEED (หนุนใจ) -->
+<div class="page" id="page-feed">
+  <div style="margin-top:20px" id="feedContainer">
+    <div class="feed-empty">กำลังโหลด...</div>
+  </div>
+</div>
+
+<!-- TAB: INBOX -->
+<div class="page" id="page-inbox">
+  <div style="margin-top:20px" id="inboxContainer">
+    <div class="feed-empty">กำลังโหลด...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, onSnapshot,
+    query, orderBy, serverTimestamp, doc, updateDoc, getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
+    authDomain: "betweenus-ae90e.firebaseapp.com",
+    projectId: "betweenus-ae90e",
+    storageBucket: "betweenus-ae90e.firebasestorage.app",
+    messagingSenderId: "294950831796",
+    appId: "1:294950831796:web:33251ef3088aa73610f9e1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Generate anonymous user ID (stored in sessionStorage per session)
+  let myUserId = sessionStorage.getItem("buUserId");
+  if (!myUserId) {
+    myUserId = "anon_" + Math.random().toString(36).slice(2, 9);
+    sessionStorage.setItem("buUserId", myUserId);
   }
 
-  function thank() {
-    showToast("ขอบคุณแล้ว ❤️");
+  document.getElementById("userDot").textContent = myUserId.slice(5, 7).toUpperCase();
+
+  // ── SEND VENT ──
+  window.sendVent = async function() {
+    const text = document.getElementById("ventText").value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById("sendBtn");
+    btn.disabled = true;
+    btn.textContent = "กำลังส่ง...";
+
+    try {
+      await addDoc(collection(db, "vents"), {
+        text,
+        userId: myUserId,
+        createdAt: serverTimestamp(),
+        encouragements: []
+      });
+
+      document.getElementById("ventText").value = "";
+      document.getElementById("charCount").textContent = "0";
+      showToast("ส่งแล้ว 💌 ขอบคุณที่เปิดใจ");
+    } catch (e) {
+      showToast("เกิดข้อผิดพลาด ลองใหม่นะ");
+    }
+
+    btn.disabled = false;
+    btn.textContent = "ส่ง";
+  };
+
+  // ── SEND ENCOURAGEMENT + TRIGGER AI VERSE ──
+  window.sendEncouragement = async function(ventId, ventText, btnEl) {
+    const panel = btnEl.closest(".vent-card").querySelector(".encourage-panel");
+    const textarea = panel.querySelector("textarea");
+    const msg = textarea.value.trim();
+    if (!msg) return;
+
+    const sendBtn = panel.querySelector(".send-encourage-btn");
+    sendBtn.disabled = true;
+    sendBtn.textContent = "กำลังส่ง...";
+
+    try {
+      // Save encouragement to sub-collection
+      await addDoc(collection(db, "vents", ventId, "encouragements"), {
+        text: msg,
+        fromUserId: myUserId,
+        createdAt: serverTimestamp()
+      });
+
+      // Get vent doc to find ventOwner's userId
+      const ventDoc = await getDoc(doc(db, "vents", ventId));
+      const ventOwnerId = ventDoc.data()?.userId;
+
+      // Save to inbox of ventOwner
+      await addDoc(collection(db, "inbox", ventOwnerId, "messages"), {
+        encouragement: msg,
+        ventText: ventText,
+        fromUserId: myUserId,
+        verse: null,
+        verseLoading: true,
+        createdAt: serverTimestamp()
+      });
+
+      // Get inbox message id for updating with verse
+      // We'll call AI to get verse, then update
+      textarea.value = "";
+      panel.classList.remove("open");
+      showToast("ส่งกำลังใจแล้ว ❤️");
+
+      // Trigger AI verse generation
+      fetchVerseForVent(ventText, ventOwnerId);
+
+    } catch (e) {
+      showToast("เกิดข้อผิดพลาด ลองใหม่นะ");
+    }
+
+    sendBtn.disabled = false;
+    sendBtn.textContent = "ส่ง";
+  };
+
+  // ── FETCH VERSE FROM CLAUDE API ──
+  async function fetchVerseForVent(ventText, ventOwnerId) {
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `คุณเป็นผู้ช่วยที่เข้าใจพระคัมภีร์คริสเตียน (ภาษาไทย)\n\nคนนี้ระบายว่า: "${ventText}"\n\nกรุณาเลือกข้อพระคัมภีร์ 1 ข้อที่เหมาะสมและหนุนใจสำหรับสิ่งที่เขาระบาย ตอบในรูปแบบ JSON เท่านั้น ไม่มีข้อความอื่น:\n{"verse": "เนื้อหาข้อพระคัมภีร์ภาษาไทย", "reference": "ชื่อหนังสือ บทที่:ข้อที่"}`
+          }]
+        })
+      });
+
+      const data = await response.json();
+      const raw = data.content?.[0]?.text || "";
+      const clean = raw.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+
+      // Save verse to most recent inbox message of this user
+      const inboxRef = collection(db, "inbox", ventOwnerId, "messages");
+      const q = query(inboxRef, orderBy("createdAt", "desc"));
+      const snapshot = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDocs(q);
+
+      if (!snapshot.empty) {
+        const latestDoc = snapshot.docs[0];
+        await updateDoc(doc(db, "inbox", ventOwnerId, "messages", latestDoc.id), {
+          verse: parsed.verse,
+          verseRef: parsed.reference,
+          verseLoading: false
+        });
+      }
+
+    } catch (e) {
+      console.error("Verse fetch error:", e);
+    }
   }
 
-  function showToast(text) {
-    const toast = document.getElementById("toast");
-    toast.innerText = text;
-    toast.style.display = "block";
+  // ── REALTIME FEED (all vents except mine) ──
+  function loadFeed() {
+    const container = document.getElementById("feedContainer");
+    const q = query(collection(db, "vents"), orderBy("createdAt", "desc"));
 
-    setTimeout(() => {
-      toast.style.display = "none";
-    }, 2000);
+    onSnapshot(q, (snapshot) => {
+      const others = snapshot.docs.filter(d => d.data().userId !== myUserId);
+
+      if (others.length === 0) {
+        container.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความ รอคนอื่นมาระบายก่อนนะ 🌿</div>`;
+        return;
+      }
+
+      container.innerHTML = others.map(d => {
+        const data = d.data();
+        const time = data.createdAt?.toDate?.()?.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) || "";
+        return `
+          <div class="vent-card" id="card-${d.id}">
+            <div class="vent-text">${escHtml(data.text)}</div>
+            <div class="meta">
+              <span class="time">${time}</span>
+              <button class="encourage-btn" onclick="toggleEncouragePanel(this)">หนุนใจ</button>
+            </div>
+            <div class="encourage-panel">
+              <textarea placeholder="พิมพ์กำลังใจ..." rows="3"></textarea><br>
+              <button class="send-encourage-btn" onclick="sendEncouragement('${d.id}', ${JSON.stringify(data.text)}, this)">ส่ง</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    });
   }
 
-  function toggleTheme() {
-    document.body.classList.toggle("light");
+  // ── REALTIME INBOX ──
+  function loadInbox() {
+    const container = document.getElementById("inboxContainer");
+    const q = query(collection(db, "inbox", myUserId, "messages"), orderBy("createdAt", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        container.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความหนุนใจ ลองไประบายก่อนนะ 💜</div>`;
+        return;
+      }
+
+      container.innerHTML = snapshot.docs.map(d => {
+        const data = d.data();
+        let verseHtml = "";
+
+        if (data.verseLoading) {
+          verseHtml = `<div class="verse-card"><div class="verse-loading"><span class="spinner"></span>กำลังเลือกข้อพระคัมภีร์...</div></div>`;
+        } else if (data.verse) {
+          verseHtml = `
+            <div class="verse-card">
+              <div class="verse-label">✦ พระคำสำหรับเธอ</div>
+              <div class="verse-text">${escHtml(data.verse)}</div>
+              <div class="verse-ref">${escHtml(data.verseRef || "")}</div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="inbox-card">
+            <div class="from-label">💬 ข้อความหนุนใจ</div>
+            <div class="encourage-text">${escHtml(data.encouragement)}</div>
+            ${verseHtml}
+          </div>
+        `;
+      }).join("");
+    });
   }
+
+  // ── HELPERS ──
+  window.toggleEncouragePanel = function(btn) {
+    const panel = btn.closest(".vent-card").querySelector(".encourage-panel");
+    panel.classList.toggle("open");
+  };
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  window.showToast = function(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2500);
+  };
+
+  window.updateCount = function() {
+    const val = document.getElementById("ventText").value;
+    document.getElementById("charCount").textContent = val.length;
+    document.getElementById("sendBtn").disabled = val.trim().length === 0;
+  };
+
+  // ── TABS ──
+  window.switchTab = function(tab) {
+    document.querySelectorAll(".tab").forEach((t, i) => {
+      t.classList.toggle("active", ["vent","feed","inbox"][i] === tab);
+    });
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page-" + tab).classList.add("active");
+  };
+
+  // ── INIT ──
+  loadFeed();
+  loadInbox();
 </script>
 
 </body>
