@@ -23,287 +23,58 @@
       --verse-bg: #1a1426;
       --verse-border: rgba(168,156,255,0.3);
     }
-    body {
-      font-family: 'Kanit', sans-serif;
-      font-weight: 300;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 0 0 80px;
-    }
-    .header {
-      padding: 24px 20px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 0.5px solid var(--border);
-    }
+    body { font-family: 'Kanit', sans-serif; font-weight: 300; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
+    .header { padding: 24px 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
     .logo { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
     .logo span { color: var(--accent); }
-    .user-badge {
-      font-size: 11px;
-      letter-spacing: 1px;
-      color: var(--muted);
-      background: var(--surface2);
-      border: 0.5px solid var(--border);
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
-    .tabs {
-      display: flex;
-      padding: 0 20px;
-      border-bottom: 0.5px solid var(--border);
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 14px 4px;
-      font-size: 14px;
-      font-weight: 300;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-    }
+    .user-badge { font-size: 11px; letter-spacing: 1px; color: var(--muted); background: var(--surface2); border: 0.5px solid var(--border); padding: 4px 10px; border-radius: 20px; }
+    .tabs { display: flex; padding: 0 20px; border-bottom: 0.5px solid var(--border); }
+    .tab { flex: 1; text-align: center; padding: 14px 4px; font-size: 14px; font-weight: 300; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
     .page { display: none; padding: 20px; max-width: 480px; margin: 0 auto; }
     .page.active { display: block; }
-    .section-label {
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-    .vent-box {
-      width: 100%;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      color: var(--text);
-      font-family: 'Kanit', sans-serif;
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.7;
-      resize: none;
-      min-height: 140px;
-      transition: border-color 0.2s;
-      outline: none;
-    }
+    .section-label { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .vent-box { width: 100%; background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; color: var(--text); font-family: 'Kanit', sans-serif; font-weight: 300; font-size: 15px; line-height: 1.7; resize: none; min-height: 140px; transition: border-color 0.2s; outline: none; }
     .vent-box:focus { border-color: rgba(168,156,255,0.4); }
     .vent-box::placeholder { color: var(--muted); }
     .char-count { text-align: right; font-size: 12px; color: var(--muted); margin-top: 6px; }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 50px;
-      border: none;
-      font-family: 'Kanit', sans-serif;
-      font-weight: 400;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 12px;
-    }
+    .btn { width: 100%; padding: 14px; border-radius: 50px; border: none; font-family: 'Kanit', sans-serif; font-weight: 400; font-size: 15px; cursor: pointer; transition: all 0.2s; margin-top: 12px; }
     .btn-primary { background: var(--accent); color: #0a0a10; }
     .btn-primary:hover { opacity: 0.85; }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-teal { background: var(--accent2); color: #0a0a10; }
-    .btn-teal:hover { opacity: 0.85; }
-    .btn-teal:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* INTRO BOX */
-    .intro-box {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
+    .btn-ghost { background: transparent; border: 0.5px solid var(--border); color: var(--muted); }
+    .intro-box { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
     .intro-box h3 { font-size: 16px; font-weight: 500; color: var(--accent); margin-bottom: 8px; }
     .intro-box p { font-size: 13px; line-height: 1.7; color: var(--muted); }
-
-    /* RANDOM CARD */
-    .random-area {
-      text-align: center;
-      padding: 20px 0;
-    }
-    .random-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 20px;
-      padding: 24px 20px;
-      margin: 20px 0;
-      animation: fadeUp 0.35s ease;
-      text-align: left;
-    }
-    .random-card .vent-text {
-      font-size: 16px;
-      line-height: 1.8;
-      color: var(--text);
-    }
-    .random-card .anon-tag {
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
+    .random-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 20px; padding: 24px 20px; margin: 16px 0; animation: fadeUp 0.35s ease; }
+    .anon-tag { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .vent-text { font-size: 16px; line-height: 1.8; color: var(--text); }
     .encourage-area { margin-top: 16px; }
-    .encourage-area textarea {
-      width: 100%;
-      background: var(--surface2);
-      border: 0.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      color: var(--text);
-      font-family: 'Kanit', sans-serif;
-      font-weight: 300;
-      font-size: 14px;
-      resize: none;
-      min-height: 90px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+    .encourage-area textarea { width: 100%; background: var(--surface2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px; color: var(--text); font-family: 'Kanit', sans-serif; font-weight: 300; font-size: 14px; resize: none; min-height: 90px; outline: none; transition: border-color 0.2s; }
     .encourage-area textarea:focus { border-color: rgba(126,207,179,0.3); }
     .encourage-area textarea::placeholder { color: var(--muted); }
-    .send-enc-btn {
-      margin-top: 8px;
-      padding: 11px 24px;
-      border-radius: 50px;
-      border: none;
-      background: var(--accent2);
-      color: #0a0a10;
-      font-family: 'Kanit', sans-serif;
-      font-weight: 400;
-      font-size: 14px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      width: 100%;
-    }
+    .send-enc-btn { margin-top: 8px; padding: 13px; border-radius: 50px; border: none; background: var(--accent2); color: #0a0a10; font-family: 'Kanit', sans-serif; font-weight: 400; font-size: 14px; cursor: pointer; transition: opacity 0.2s; width: 100%; }
     .send-enc-btn:hover { opacity: 0.8; }
     .send-enc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .done-label {
-      text-align: center;
-      font-size: 13px;
-      color: var(--accent2);
-      padding: 10px;
-    }
-
-    /* INBOX */
-    .inbox-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 14px;
-      animation: fadeUp 0.3s ease;
-    }
-    .inbox-card .from-label {
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .inbox-card .enc-text {
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--text);
-    }
-
-    /* VERSE CARD */
-    .verse-card {
-      background: var(--verse-bg);
-      border: 0.5px solid var(--verse-border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-top: 14px;
-    }
-    .verse-card .verse-label {
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
-      opacity: 0.7;
-    }
-    .verse-card .verse-text {
-      font-size: 14px;
-      line-height: 1.8;
-      color: rgba(240,240,245,0.85);
-    }
-    .verse-card .verse-ref {
-      font-size: 12px;
-      color: var(--accent);
-      margin-top: 8px;
-      opacity: 0.6;
-    }
-    .verse-loading {
-      font-size: 13px;
-      color: var(--muted);
-      padding: 8px 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* SPINNER */
-    .spinner {
-      width: 14px; height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: inline-block;
-      flex-shrink: 0;
-    }
+    .inbox-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; animation: fadeUp 0.3s ease; }
+    .from-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .enc-text { font-size: 15px; line-height: 1.7; color: var(--text); }
+    .verse-card { background: var(--verse-bg); border: 0.5px solid var(--verse-border); border-radius: 14px; padding: 14px 16px; margin-top: 14px; animation: fadeUp 0.4s ease; }
+    .verse-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; opacity: 0.7; }
+    .verse-text { font-size: 14px; line-height: 1.8; color: rgba(240,240,245,0.85); }
+    .verse-ref { font-size: 12px; color: var(--accent); margin-top: 8px; opacity: 0.6; }
+    .verse-loading { font-size: 13px; color: var(--muted); padding: 8px 0; display: flex; align-items: center; gap: 8px; }
+    .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* EMPTY */
-    .feed-empty {
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-      padding: 50px 20px;
-      line-height: 1.8;
-    }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--surface2);
-      border: 0.5px solid var(--border);
-      color: var(--text);
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-size: 13px;
-      opacity: 0;
-      transition: all 0.3s;
-      pointer-events: none;
-      white-space: nowrap;
-      z-index: 999;
-    }
+    .feed-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 50px 20px; line-height: 1.8; }
+    .no-more { text-align: center; font-size: 13px; color: var(--muted); padding: 30px 20px; line-height: 1.8; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 0.5px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 50px; font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; z-index: 999; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .no-more {
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-      padding: 20px;
-      line-height: 1.8;
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .shuffle-screen { text-align: center; padding: 60px 20px 30px; }
+    .shuffle-icon { font-size: 48px; margin-bottom: 20px; }
+    .shuffle-count { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.8; }
+    .shuffle-hint { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.8; }
   </style>
 </head>
 <body>
@@ -314,12 +85,11 @@
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('vent')">ระบาย</div>
-  <div class="tab" onclick="switchTab('encourage')">หนุนใจ</div>
-  <div class="tab" onclick="switchTab('inbox')">กล่องรับ</div>
+  <div class="tab active" id="tab-vent" onclick="switchTab('vent')">ระบาย</div>
+  <div class="tab" id="tab-encourage" onclick="switchTab('encourage')">หนุนใจ</div>
+  <div class="tab" id="tab-inbox" onclick="switchTab('inbox')">กล่องรับ</div>
 </div>
 
-<!-- TAB: ระบาย -->
 <div class="page active" id="page-vent">
   <div class="intro-box" style="margin-top:20px">
     <h3>พื้นที่ของเธอ</h3>
@@ -331,14 +101,12 @@
   <button class="btn btn-primary" id="sendBtn" onclick="sendVent()" disabled>ส่ง</button>
 </div>
 
-<!-- TAB: หนุนใจ -->
 <div class="page" id="page-encourage">
   <div style="margin-top:20px" id="encourageArea">
     <div class="feed-empty">กำลังโหลด...</div>
   </div>
 </div>
 
-<!-- TAB: กล่องรับ -->
 <div class="page" id="page-inbox">
   <div style="margin-top:20px" id="inboxContainer">
     <div class="feed-empty">กำลังโหลด...</div>
@@ -347,95 +115,135 @@
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, getDocs, onSnapshot,
-  query, orderBy, serverTimestamp, doc, updateDoc, getDoc, setDoc, arrayUnion
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<!-- Firebase (compat version = ไม่ใช้ module, ใช้ global แทน) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
-  authDomain: "betweenus-ae90e.firebaseapp.com",
-  projectId: "betweenus-ae90e",
-  storageBucket: "betweenus-ae90e.firebasestorage.app",
-  messagingSenderId: "294950831796",
-  appId: "1:294950831796:web:33251ef3088aa73610f9e1"
-};
+<script>
+  // ── INIT FIREBASE ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
+    authDomain: "betweenus-ae90e.firebaseapp.com",
+    projectId: "betweenus-ae90e",
+    storageBucket: "betweenus-ae90e.firebasestorage.app",
+    messagingSenderId: "294950831796",
+    appId: "1:294950831796:web:33251ef3088aa73610f9e1"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-// anonymous user ID
-let myId = sessionStorage.getItem("buId");
-if (!myId) {
-  myId = "u_" + Math.random().toString(36).slice(2, 8);
-  sessionStorage.setItem("buId", myId);
-}
-document.getElementById("userBadge").textContent = myId;
-
-// ── SEND VENT ──
-window.sendVent = async function() {
-  const ta = document.getElementById("ventText");
-  const text = ta.value.trim();
-  if (!text) return;
-  const btn = document.getElementById("sendBtn");
-  btn.disabled = true;
-  btn.textContent = "กำลังส่ง...";
-  try {
-    await addDoc(collection(db, "vents"), {
-      text,
-      userId: myId,
-      createdAt: serverTimestamp()
-    });
-    ta.value = "";
-    document.getElementById("charCount").textContent = "0";
-    showToast("ส่งแล้ว 💌");
-  } catch(e) {
-    console.error(e);
-    showToast("เกิดข้อผิดพลาด: " + e.message);
+  // ── ANONYMOUS USER ID ──
+  let myId = sessionStorage.getItem("buId");
+  if (!myId) {
+    myId = "u_" + Math.random().toString(36).slice(2, 8);
+    sessionStorage.setItem("buId", myId);
   }
-  btn.disabled = false;
-  btn.textContent = "ส่ง";
-};
+  document.getElementById("userBadge").textContent = myId;
 
-// ── ENCOURAGE TAB: สุ่ม 1 ข้อความ ──
-let currentVent = null;
+  let currentVent = null;
+  let _remaining = [];
 
-async function loadEncourageTab() {
-  const area = document.getElementById("encourageArea");
-  area.innerHTML = `<div class="feed-empty"><div class="spinner" style="margin:0 auto 12px"></div><br>กำลังโหลด...</div>`;
+  // ── TABS ──
+  function switchTab(tab) {
+    ["vent","encourage","inbox"].forEach(t => {
+      document.getElementById("tab-" + t).classList.toggle("active", t === tab);
+      document.getElementById("page-" + t).classList.toggle("active", t === tab);
+    });
+    if (tab === "encourage") loadEncourageTab();
+  }
 
-  try {
-    // ดึง vents ทั้งหมดที่ไม่ใช่ของตัวเอง
-    const snap = await getDocs(query(collection(db, "vents"), orderBy("createdAt", "desc")));
-    const all = snap.docs.filter(d => d.data().userId !== myId);
+  // ── UPDATE CHAR COUNT ──
+  function updateCount() {
+    const v = document.getElementById("ventText").value;
+    document.getElementById("charCount").textContent = v.length;
+    document.getElementById("sendBtn").disabled = v.trim().length === 0;
+  }
 
-    if (all.length === 0) {
-      area.innerHTML = `<div class="feed-empty">ยังไม่มีใครระบายเลย<br>รอให้คนอื่นมาระบายก่อนนะ 🌿</div>`;
-      return;
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2800);
+  }
+
+  function escHtml(s) {
+    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  // ── SEND VENT ──
+  async function sendVent() {
+    const ta = document.getElementById("ventText");
+    const text = ta.value.trim();
+    if (!text) return;
+    const btn = document.getElementById("sendBtn");
+    btn.disabled = true;
+    btn.textContent = "กำลังส่ง...";
+    try {
+      await db.collection("vents").add({
+        text,
+        userId: myId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      ta.value = "";
+      document.getElementById("charCount").textContent = "0";
+      showToast("ส่งแล้ว 💌");
+    } catch(e) {
+      showToast("เกิดข้อผิดพลาด: " + e.message);
     }
+    btn.disabled = false;
+    btn.textContent = "ส่ง";
+  }
 
-    // ดึงรายการที่ฉันเคยหนุนใจไปแล้ว
-    const doneSnap = await getDoc(doc(db, "encouraged", myId));
-    const doneIds = doneSnap.exists() ? (doneSnap.data().ventIds || []) : [];
+  // ── LOAD ENCOURAGE TAB (แสดงปุ่มสุ่ม) ──
+  async function loadEncourageTab() {
+    const area = document.getElementById("encourageArea");
+    area.innerHTML = `<div class="feed-empty"><div class="spinner" style="margin:0 auto 12px;display:block"></div>กำลังโหลด...</div>`;
+    currentVent = null;
 
-    // กรองเอาอันที่ยังไม่เคยหนุนใจ
-    const remaining = all.filter(d => !doneIds.includes(d.id));
+    try {
+      const snap = await db.collection("vents").orderBy("createdAt","desc").get();
+      const all = snap.docs.filter(d => d.data().userId !== myId);
 
-    if (remaining.length === 0) {
-      area.innerHTML = `<div class="no-more">✨ เธอหนุนใจทุกคนครบแล้ว!<br><span style="color:var(--accent2)">ขอบคุณมากเลยนะ</span><br><br><button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="loadEncourageTab()">โหลดใหม่</button></div>`;
-      return;
+      if (all.length === 0) {
+        area.innerHTML = `<div class="feed-empty">ยังไม่มีใครระบายเลย<br>รอให้คนอื่นมาระบายก่อนนะ 🌿</div>`;
+        return;
+      }
+
+      const doneSnap = await db.collection("encouraged").doc(myId).get();
+      const doneIds = doneSnap.exists ? (doneSnap.data().ventIds || []) : [];
+      _remaining = all.filter(d => !doneIds.includes(d.id));
+
+      if (_remaining.length === 0) {
+        area.innerHTML = `
+          <div class="no-more">
+            ✨ เธอหนุนใจทุกคนครบแล้ว!<br>
+            <span style="color:var(--accent2)">ขอบคุณมากเลยนะ</span><br><br>
+            <button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="loadEncourageTab()">โหลดใหม่</button>
+          </div>`;
+        return;
+      }
+
+      area.innerHTML = `
+        <div class="shuffle-screen">
+          <div class="shuffle-icon">🎲</div>
+          <div class="shuffle-count">มี ${_remaining.length} ข้อความที่รอกำลังใจอยู่</div>
+          <button class="btn btn-primary" style="max-width:200px;margin:0 auto;font-size:15px" onclick="revealVent()">สุ่มเลย</button>
+          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอกำลังใจจากเธออยู่</div>
+        </div>`;
+    } catch(e) {
+      area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`;
     }
+  }
 
-    // สุ่ม 1 อัน
-    const picked = remaining[Math.floor(Math.random() * remaining.length)];
+  // ── REVEAL VENT ──
+  function revealVent() {
+    if (_remaining.length === 0) { loadEncourageTab(); return; }
+    const picked = _remaining[Math.floor(Math.random() * _remaining.length)];
     currentVent = { id: picked.id, ...picked.data() };
 
-    area.innerHTML = `
-      <div style="text-align:center; margin-bottom:16px">
-        <div style="font-size:13px; color:var(--muted)">มีอีก ${remaining.length} ข้อความที่รอกำลังใจ</div>
-      </div>
+    document.getElementById("encourageArea").innerHTML = `
       <div class="random-card">
         <div class="anon-tag">익명 · ไม่ระบุตัวตน</div>
         <div class="vent-text">${escHtml(currentVent.text)}</div>
@@ -444,171 +252,125 @@ async function loadEncourageTab() {
           <button class="send-enc-btn" id="encBtn" onclick="sendEncouragement()">ส่งกำลังใจ</button>
         </div>
       </div>
-      <button class="btn" style="background:transparent;border:0.5px solid var(--border);color:var(--muted);margin-top:4px" onclick="loadEncourageTab()">ข้ามไปอีกอัน</button>
-    `;
-  } catch(e) {
-    console.error(e);
-    area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`;
+      <button class="btn btn-ghost" onclick="loadEncourageTab()">สุ่มใหม่</button>`;
   }
-}
 
-// ── SEND ENCOURAGEMENT + AI VERSE ──
-window.sendEncouragement = async function() {
-  const msg = document.getElementById("encText")?.value.trim();
-  if (!msg || !currentVent) return;
+  // ── SEND ENCOURAGEMENT ──
+  async function sendEncouragement() {
+    const msg = document.getElementById("encText")?.value.trim();
+    if (!msg || !currentVent) return;
+    const btn = document.getElementById("encBtn");
+    btn.disabled = true;
+    btn.textContent = "กำลังส่ง...";
 
-  const btn = document.getElementById("encBtn");
-  btn.disabled = true;
-  btn.textContent = "กำลังส่ง...";
-
-  try {
-    const ventOwnerId = currentVent.userId;
-    const ventText = currentVent.text;
-    const ventId = currentVent.id;
-
-    // บันทึก inbox ของเจ้าของ vent
-    const inboxRef = await addDoc(collection(db, "inbox", ventOwnerId, "messages"), {
-      encouragement: msg,
-      ventText,
-      verseLoading: true,
-      verse: null,
-      verseRef: null,
-      createdAt: serverTimestamp()
-    });
-
-    // mark ว่าฉันหนุนใจ vent นี้แล้ว
-    await setDoc(doc(db, "encouraged", myId), {
-      ventIds: arrayUnion(ventId)
-    }, { merge: true });
-
-    showToast("ส่งกำลังใจแล้ว ❤️");
-
-    // โหลดอันใหม่ทันที
-    loadEncourageTab();
-
-    // ขอ verse จาก AI ใน background
-    fetchVerse(ventText, ventOwnerId, inboxRef.id);
-
-  } catch(e) {
-    console.error(e);
-    showToast("เกิดข้อผิดพลาด: " + e.message);
-    btn.disabled = false;
-    btn.textContent = "ส่งกำลังใจ";
-  }
-};
-
-// ── FETCH VERSE (Claude API via Anthropic) ──
-async function fetchVerse(ventText, ownerId, msgId) {
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "anthropic-dangerous-allow-browser": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 300,
-        system: "คุณเป็นผู้ช่วยที่รู้จักพระคัมภีร์คริสเตียนเป็นอย่างดี ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown",
-        messages: [{
-          role: "user",
-          content: `คนนี้ระบายว่า: "${ventText}"\n\nเลือกข้อพระคัมภีร์ภาษาไทย 1 ข้อที่หนุนใจได้ตรงกับเรื่องที่เขาระบาย โดยใช้การแปลฉบับ THSV11 (ไทยมาตรฐาน 2011) เท่านั้น ตอบในรูปแบบ: {"verse":"เนื้อหาข้อฉบับ THSV11","reference":"ชื่อหนังสือ บทที่:ข้อที่"}`
-        }]
-      })
-    });
-
-    const data = await res.json();
-    const raw = data.content?.[0]?.text || "{}";
-    const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
-
-    // update inbox message
-    await updateDoc(doc(db, "inbox", ownerId, "messages", msgId), {
-      verse: parsed.verse || null,
-      verseRef: parsed.reference || null,
-      verseLoading: false
-    });
-  } catch(e) {
-    console.error("verse error:", e);
-    // update ว่า loading เสร็จแล้วแม้จะ fail
     try {
-      await updateDoc(doc(db, "inbox", ownerId, "messages", msgId), {
-        verseLoading: false
-      });
-    } catch(_) {}
-  }
-}
+      const ventOwnerId = currentVent.userId;
+      const ventText = currentVent.text;
+      const ventId = currentVent.id;
 
-// ── INBOX (realtime) ──
-function loadInbox() {
-  const container = document.getElementById("inboxContainer");
-  const q = query(collection(db, "inbox", myId, "messages"), orderBy("createdAt", "desc"));
+      // บันทึก inbox
+      const inboxRef = await db.collection("inbox").doc(ventOwnerId)
+        .collection("messages").add({
+          encouragement: msg,
+          ventText,
+          verseLoading: true,
+          verse: null,
+          verseRef: null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-  onSnapshot(q, (snap) => {
-    if (snap.empty) {
-      container.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความหนุนใจ<br>ลองไประบายก่อนแล้วรอนะ 💜</div>`;
-      return;
+      // mark ว่าหนุนใจ vent นี้แล้ว
+      await db.collection("encouraged").doc(myId).set({
+        ventIds: firebase.firestore.FieldValue.arrayUnion(ventId)
+      }, { merge: true });
+
+      showToast("ส่งกำลังใจแล้ว ❤️");
+      loadEncourageTab();
+
+      // ขอ verse จาก AI ใน background
+      fetchVerse(ventText, ventOwnerId, inboxRef.id);
+
+    } catch(e) {
+      showToast("เกิดข้อผิดพลาด: " + e.message);
+      const btn = document.getElementById("encBtn");
+      if (btn) { btn.disabled = false; btn.textContent = "ส่งกำลังใจ"; }
     }
+  }
 
-    container.innerHTML = snap.docs.map(d => {
-      const data = d.data();
-      let verseHtml = "";
+  // ── FETCH VERSE FROM CLAUDE ──
+  async function fetchVerse(ventText, ownerId, msgId) {
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "anthropic-dangerous-allow-browser": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 300,
+          system: "คุณเป็นผู้ช่วยที่รู้จักพระคัมภีร์คริสเตียนฉบับ THSV11 (ไทยมาตรฐาน 2011) เป็นอย่างดี ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown backtick",
+          messages: [{
+            role: "user",
+            content: `คนนี้ระบายว่า: "${ventText}"\n\nเลือกข้อพระคัมภีร์ 1 ข้อจากฉบับ THSV11 ที่หนุนใจได้ตรงกับเรื่องที่เขาระบาย ตอบในรูปแบบ: {"verse":"เนื้อหาข้อ THSV11","reference":"ชื่อหนังสือ บทที่:ข้อที่"}`
+          }]
+        })
+      });
 
-      if (data.verseLoading) {
-        verseHtml = `
-          <div class="verse-card">
-            <div class="verse-loading"><span class="spinner"></span>กำลังเลือกข้อพระคัมภีร์...</div>
-          </div>`;
-      } else if (data.verse) {
-        verseHtml = `
-          <div class="verse-card">
-            <div class="verse-label">✦ พระคำสำหรับเธอ</div>
-            <div class="verse-text">${escHtml(data.verse)}</div>
-            <div class="verse-ref">${escHtml(data.verseRef || "")}</div>
-          </div>`;
-      }
+      const data = await res.json();
+      const raw = data.content?.[0]?.text || "{}";
+      const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
 
-      return `
-        <div class="inbox-card">
-          <div class="from-label">💬 กำลังใจจากคนแปลกหน้า</div>
-          <div class="enc-text">${escHtml(data.encouragement)}</div>
-          ${verseHtml}
-        </div>`;
-    }).join("");
-  });
-}
+      await db.collection("inbox").doc(ownerId)
+        .collection("messages").doc(msgId).update({
+          verse: parsed.verse || null,
+          verseRef: parsed.reference || null,
+          verseLoading: false
+        });
+    } catch(e) {
+      console.error("verse error:", e);
+      try {
+        await db.collection("inbox").doc(ownerId)
+          .collection("messages").doc(msgId).update({ verseLoading: false });
+      } catch(_) {}
+    }
+  }
 
-// ── TABS ──
-window.switchTab = function(tab) {
-  document.querySelectorAll(".tab").forEach((t, i) => {
-    t.classList.toggle("active", ["vent","encourage","inbox"][i] === tab);
-  });
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById("page-" + tab).classList.add("active");
-  if (tab === "encourage") loadEncourageTab();
-};
+  // ── INBOX (realtime) ──
+  function loadInbox() {
+    db.collection("inbox").doc(myId).collection("messages")
+      .orderBy("createdAt","desc")
+      .onSnapshot(snap => {
+        const container = document.getElementById("inboxContainer");
+        if (snap.empty) {
+          container.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความหนุนใจ<br>ลองไประบายก่อนแล้วรอนะ 💜</div>`;
+          return;
+        }
+        container.innerHTML = snap.docs.map(d => {
+          const data = d.data();
+          let verseHtml = "";
+          if (data.verseLoading) {
+            verseHtml = `<div class="verse-card"><div class="verse-loading"><span class="spinner"></span>กำลังเลือกข้อพระคัมภีร์...</div></div>`;
+          } else if (data.verse) {
+            verseHtml = `
+              <div class="verse-card">
+                <div class="verse-label">✦ พระคำสำหรับเธอ (THSV11)</div>
+                <div class="verse-text">${escHtml(data.verse)}</div>
+                <div class="verse-ref">${escHtml(data.verseRef || "")}</div>
+              </div>`;
+          }
+          return `
+            <div class="inbox-card">
+              <div class="from-label">💬 กำลังใจจากคนแปลกหน้า</div>
+              <div class="enc-text">${escHtml(data.encouragement)}</div>
+              ${verseHtml}
+            </div>`;
+        }).join("");
+      });
+  }
 
-// ── HELPERS ──
-window.updateCount = function() {
-  const v = document.getElementById("ventText").value;
-  document.getElementById("charCount").textContent = v.length;
-  document.getElementById("sendBtn").disabled = v.trim().length === 0;
-};
-
-function escHtml(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-window.showToast = function(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2800);
-};
-
-window.loadEncourageTab = loadEncourageTab;
-
-// INIT
-loadInbox();
+  // ── START ──
+  loadInbox();
 </script>
 </body>
 </html>
