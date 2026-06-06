@@ -20,14 +20,24 @@
       --muted: rgba(240,240,245,0.45);
       --accent: #a89cff;
       --accent2: #7ecfb3;
-      --verse-bg: #1a1426;
-      --verse-border: rgba(168,156,255,0.3);
+      --danger: #ff6b6b;
     }
-    body { font-family: 'Kanit', sans-serif; font-weight: 300; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
+    body { font-family: 'Kanit', sans-serif; font-weight: 300; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; overflow-x: hidden; }
+
+    /* FLOATING HEARTS */
+    .heart-container { position: fixed; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+    .heart { position: absolute; bottom: -40px; font-size: 20px; opacity: 0; animation: floatHeart linear forwards; }
+    @keyframes floatHeart {
+      0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+      10%  { opacity: 0.5; }
+      80%  { opacity: 0.25; }
+      100% { transform: translateY(-110vh) scale(1.1); opacity: 0; }
+    }
+
     .header { padding: 24px 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
     .logo { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
     .logo span { color: var(--accent); }
-    .user-badge { font-size: 11px; letter-spacing: 1px; color: var(--muted); background: var(--surface2); border: 0.5px solid var(--border); padding: 4px 10px; border-radius: 20px; }
+    .user-badge { font-size: 11px; letter-spacing: 1px; color: var(--muted); background: var(--surface2); border: 0.5px solid var(--border); padding: 4px 10px; border-radius: 20px; cursor: pointer; }
     .tabs { display: flex; padding: 0 20px; border-bottom: 0.5px solid var(--border); }
     .tab { flex: 1; text-align: center; padding: 14px 4px; font-size: 14px; font-weight: 300; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -56,15 +66,13 @@
     .send-enc-btn { margin-top: 8px; padding: 13px; border-radius: 50px; border: none; background: var(--accent2); color: #0a0a10; font-family: 'Kanit', sans-serif; font-weight: 400; font-size: 14px; cursor: pointer; transition: opacity 0.2s; width: 100%; }
     .send-enc-btn:hover { opacity: 0.8; }
     .send-enc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* INBOX */
     .inbox-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; animation: fadeUp 0.3s ease; }
     .from-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
     .enc-text { font-size: 15px; line-height: 1.7; color: var(--text); }
-    .verse-card { background: var(--verse-bg); border: 0.5px solid var(--verse-border); border-radius: 14px; padding: 14px 16px; margin-top: 14px; animation: fadeUp 0.4s ease; }
-    .verse-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; opacity: 0.7; }
-    .verse-text { font-size: 14px; line-height: 1.8; color: rgba(240,240,245,0.85); }
-    .verse-ref { font-size: 12px; color: var(--accent); margin-top: 8px; opacity: 0.6; }
-    .verse-loading { font-size: 13px; color: var(--muted); padding: 8px 0; display: flex; align-items: center; gap: 8px; }
-    .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; flex-shrink: 0; }
+
+    .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: block; margin: 0 auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .feed-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 50px 20px; line-height: 1.8; }
     .no-more { text-align: center; font-size: 13px; color: var(--muted); padding: 30px 20px; line-height: 1.8; }
@@ -75,19 +83,31 @@
     .shuffle-icon { font-size: 48px; margin-bottom: 20px; }
     .shuffle-count { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.8; }
     .shuffle-hint { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.8; }
+
+    /* MY VENTS */
+    .my-vent-item { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px; animation: fadeUp 0.3s ease; }
+    .my-vent-text { flex: 1; font-size: 14px; line-height: 1.7; color: var(--text); }
+    .delete-btn { flex-shrink: 0; background: transparent; border: none; color: var(--danger); font-size: 18px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
+    .delete-btn:hover { opacity: 1; }
+    .my-vents-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .reset-link { font-size: 12px; color: var(--muted); cursor: pointer; text-decoration: underline; }
   </style>
 </head>
 <body>
 
+<!-- HEART CONTAINER -->
+<div class="heart-container" id="heartContainer"></div>
+
 <div class="header">
   <div class="logo">Between<span>Us</span> 💭</div>
-  <div class="user-badge" id="userBadge">...</div>
+  <div class="user-badge" id="userBadge" onclick="switchTab('mine')">...</div>
 </div>
 
 <div class="tabs">
   <div class="tab active" id="tab-vent" onclick="switchTab('vent')">ระบาย</div>
   <div class="tab" id="tab-encourage" onclick="switchTab('encourage')">หนุนใจ</div>
   <div class="tab" id="tab-inbox" onclick="switchTab('inbox')">กล่องรับ</div>
+  <div class="tab" id="tab-mine" onclick="switchTab('mine')">ของฉัน</div>
 </div>
 
 <div class="page active" id="page-vent">
@@ -113,54 +133,81 @@
   </div>
 </div>
 
+<div class="page" id="page-mine">
+  <div style="margin-top:20px">
+    <div class="my-vents-header">
+      <div class="section-label" style="margin:0">ข้อความของฉัน</div>
+      <span class="reset-link" onclick="resetMyId()">รีเซ็ต ID</span>
+    </div>
+    <div id="myVentsContainer"><div class="feed-empty">กำลังโหลด...</div></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<!-- Firebase (compat version = ไม่ใช้ module, ใช้ global แทน) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <script>
-  // ── INIT FIREBASE ──
-  const firebaseConfig = {
+  firebase.initializeApp({
     apiKey: "AIzaSyBDKVbIJUrqA_GjpYRbJjor8hfIrd2HGLY",
     authDomain: "betweenus-ae90e.firebaseapp.com",
     projectId: "betweenus-ae90e",
     storageBucket: "betweenus-ae90e.firebasestorage.app",
     messagingSenderId: "294950831796",
     appId: "1:294950831796:web:33251ef3088aa73610f9e1"
-  };
-
-  firebase.initializeApp(firebaseConfig);
+  });
   const db = firebase.firestore();
 
-  // ── ANONYMOUS USER ID ──
   let myId = sessionStorage.getItem("buId");
-  if (!myId) {
-    myId = "u_" + Math.random().toString(36).slice(2, 8);
-    sessionStorage.setItem("buId", myId);
-  }
+  if (!myId) { myId = "u_" + Math.random().toString(36).slice(2,8); sessionStorage.setItem("buId", myId); }
   document.getElementById("userBadge").textContent = myId;
 
-  let currentVent = null;
-  let _remaining = [];
+  let currentVent = null, _remaining = [];
+
+  // ── FLOATING HEARTS ──
+  function spawnHearts() {
+    const container = document.getElementById("heartContainer");
+    const count = 18;
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.textContent = "🤍";
+        const size = 14 + Math.random() * 16;
+        const left = 5 + Math.random() * 90;
+        const duration = 3.5 + Math.random() * 3;
+        const delay = Math.random() * 1.5;
+        h.style.cssText = `
+          left: ${left}%;
+          font-size: ${size}px;
+          animation-duration: ${duration}s;
+          animation-delay: ${delay}s;
+          filter: brightness(1.5) saturate(0);
+          opacity: 0;
+        `;
+        container.appendChild(h);
+        setTimeout(() => h.remove(), (duration + delay + 0.5) * 1000);
+      }, i * 120);
+    }
+  }
 
   // ── TABS ──
   function switchTab(tab) {
-    ["vent","encourage","inbox"].forEach(t => {
-      document.getElementById("tab-" + t).classList.toggle("active", t === tab);
-      document.getElementById("page-" + t).classList.toggle("active", t === tab);
+    ["vent","encourage","inbox","mine"].forEach(t => {
+      document.getElementById("tab-"+t).classList.toggle("active", t===tab);
+      document.getElementById("page-"+t).classList.toggle("active", t===tab);
     });
     if (tab === "encourage") loadEncourageTab();
+    if (tab === "mine") loadMyVents();
+    if (tab === "inbox") spawnHearts();
   }
 
-  // ── UPDATE CHAR COUNT ──
   function updateCount() {
     const v = document.getElementById("ventText").value;
     document.getElementById("charCount").textContent = v.length;
     document.getElementById("sendBtn").disabled = v.trim().length === 0;
   }
 
-  // ── TOAST ──
   function showToast(msg) {
     const t = document.getElementById("toast");
     t.textContent = msg;
@@ -169,7 +216,13 @@
   }
 
   function escHtml(s) {
-    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function resetMyId() {
+    if (!confirm("รีเซ็ต ID จะทำให้เธอไม่เห็นข้อความเก่าของตัวเองอีก แน่ใจไหม?")) return;
+    sessionStorage.removeItem("buId");
+    location.reload();
   }
 
   // ── SEND VENT ──
@@ -178,53 +231,60 @@
     const text = ta.value.trim();
     if (!text) return;
     const btn = document.getElementById("sendBtn");
-    btn.disabled = true;
-    btn.textContent = "กำลังส่ง...";
+    btn.disabled = true; btn.textContent = "กำลังส่ง...";
     try {
-      await db.collection("vents").add({
-        text,
-        userId: myId,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      await db.collection("vents").add({ text, userId: myId, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
       ta.value = "";
       document.getElementById("charCount").textContent = "0";
       showToast("ส่งแล้ว 💌");
-    } catch(e) {
-      showToast("เกิดข้อผิดพลาด: " + e.message);
-    }
-    btn.disabled = false;
-    btn.textContent = "ส่ง";
+    } catch(e) { showToast("เกิดข้อผิดพลาด: " + e.message); }
+    btn.disabled = false; btn.textContent = "ส่ง";
   }
 
-  // ── LOAD ENCOURAGE TAB (แสดงปุ่มสุ่ม) ──
+  // ── MY VENTS ──
+  async function loadMyVents() {
+    const c = document.getElementById("myVentsContainer");
+    c.innerHTML = `<div class="feed-empty"><span class="spinner"></span></div>`;
+    try {
+      const snap = await db.collection("vents").where("userId","==",myId).orderBy("createdAt","desc").get();
+      if (snap.empty) { c.innerHTML = `<div class="feed-empty">เธอยังไม่ได้ระบายอะไรเลย 🌿</div>`; return; }
+      c.innerHTML = snap.docs.map(d => `
+        <div class="my-vent-item" id="myvent-${d.id}">
+          <div class="my-vent-text">${escHtml(d.data().text)}</div>
+          <button class="delete-btn" onclick="deleteMyVent('${d.id}')">🗑</button>
+        </div>`).join("");
+    } catch(e) { c.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`; }
+  }
+
+  async function deleteMyVent(id) {
+    if (!confirm("ลบข้อความนี้?")) return;
+    try {
+      await db.collection("vents").doc(id).delete();
+      document.getElementById("myvent-"+id)?.remove();
+      showToast("ลบแล้ว 🗑");
+      const c = document.getElementById("myVentsContainer");
+      if (!c.querySelector(".my-vent-item")) c.innerHTML = `<div class="feed-empty">เธอยังไม่ได้ระบายอะไรเลย 🌿</div>`;
+    } catch(e) { showToast("ลบไม่ได้: " + e.message); }
+  }
+
+  // ── ENCOURAGE TAB ──
   async function loadEncourageTab() {
     const area = document.getElementById("encourageArea");
-    area.innerHTML = `<div class="feed-empty"><div class="spinner" style="margin:0 auto 12px;display:block"></div>กำลังโหลด...</div>`;
+    area.innerHTML = `<div class="feed-empty"><span class="spinner"></span></div>`;
     currentVent = null;
-
     try {
       const snap = await db.collection("vents").orderBy("createdAt","desc").get();
       const all = snap.docs.filter(d => d.data().userId !== myId);
-
-      if (all.length === 0) {
-        area.innerHTML = `<div class="feed-empty">ยังไม่มีใครระบายเลย<br>รอให้คนอื่นมาระบายก่อนนะ 🌿</div>`;
-        return;
-      }
+      if (all.length === 0) { area.innerHTML = `<div class="feed-empty">ยังไม่มีใครระบายเลย<br>รอให้คนอื่นมาระบายก่อนนะ 🌿</div>`; return; }
 
       const doneSnap = await db.collection("encouraged").doc(myId).get();
       const doneIds = doneSnap.exists ? (doneSnap.data().ventIds || []) : [];
       _remaining = all.filter(d => !doneIds.includes(d.id));
 
       if (_remaining.length === 0) {
-        area.innerHTML = `
-          <div class="no-more">
-            ✨ เธอหนุนใจทุกคนครบแล้ว!<br>
-            <span style="color:var(--accent2)">ขอบคุณมากเลยนะ</span><br><br>
-            <button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="loadEncourageTab()">โหลดใหม่</button>
-          </div>`;
+        area.innerHTML = `<div class="no-more">✨ เธอหนุนใจทุกคนครบแล้ว!<br><span style="color:var(--accent2)">ขอบคุณมากเลยนะ</span><br><br><button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="loadEncourageTab()">โหลดใหม่</button></div>`;
         return;
       }
-
       area.innerHTML = `
         <div class="shuffle-screen">
           <div class="shuffle-icon">🎲</div>
@@ -232,17 +292,13 @@
           <button class="btn btn-primary" style="max-width:200px;margin:0 auto;font-size:15px" onclick="revealVent()">สุ่มเลย</button>
           <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอกำลังใจจากเธออยู่</div>
         </div>`;
-    } catch(e) {
-      area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`;
-    }
+    } catch(e) { area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`; }
   }
 
-  // ── REVEAL VENT ──
   function revealVent() {
     if (_remaining.length === 0) { loadEncourageTab(); return; }
     const picked = _remaining[Math.floor(Math.random() * _remaining.length)];
     currentVent = { id: picked.id, ...picked.data() };
-
     document.getElementById("encourageArea").innerHTML = `
       <div class="random-card">
         <div class="anon-tag">익명 · ไม่ระบุตัวตน</div>
@@ -255,121 +311,54 @@
       <button class="btn btn-ghost" onclick="loadEncourageTab()">สุ่มใหม่</button>`;
   }
 
-  // ── SEND ENCOURAGEMENT ──
   async function sendEncouragement() {
     const msg = document.getElementById("encText")?.value.trim();
     if (!msg || !currentVent) return;
     const btn = document.getElementById("encBtn");
-    btn.disabled = true;
-    btn.textContent = "กำลังส่ง...";
-
+    btn.disabled = true; btn.textContent = "กำลังส่ง...";
     try {
-      const ventOwnerId = currentVent.userId;
-      const ventText = currentVent.text;
-      const ventId = currentVent.id;
-
-      // บันทึก inbox
-      const inboxRef = await db.collection("inbox").doc(ventOwnerId)
-        .collection("messages").add({
-          encouragement: msg,
-          ventText,
-          verseLoading: true,
-          verse: null,
-          verseRef: null,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-      // mark ว่าหนุนใจ vent นี้แล้ว
+      await db.collection("inbox").doc(currentVent.userId).collection("messages").add({
+        encouragement: msg,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
       await db.collection("encouraged").doc(myId).set({
-        ventIds: firebase.firestore.FieldValue.arrayUnion(ventId)
+        ventIds: firebase.firestore.FieldValue.arrayUnion(currentVent.id)
       }, { merge: true });
-
       showToast("ส่งกำลังใจแล้ว ❤️");
       loadEncourageTab();
-
-      // ขอ verse จาก AI ใน background
-      fetchVerse(ventText, ventOwnerId, inboxRef.id);
-
     } catch(e) {
       showToast("เกิดข้อผิดพลาด: " + e.message);
-      const btn = document.getElementById("encBtn");
-      if (btn) { btn.disabled = false; btn.textContent = "ส่งกำลังใจ"; }
+      const b = document.getElementById("encBtn");
+      if (b) { b.disabled = false; b.textContent = "ส่งกำลังใจ"; }
     }
   }
 
-  // ── FETCH VERSE FROM CLAUDE ──
-  async function fetchVerse(ventText, ownerId, msgId) {
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "anthropic-dangerous-allow-browser": "true"
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 300,
-          system: "คุณเป็นผู้ช่วยที่รู้จักพระคัมภีร์คริสเตียนฉบับ THSV11 (ไทยมาตรฐาน 2011) เป็นอย่างดี ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown backtick",
-          messages: [{
-            role: "user",
-            content: `คนนี้ระบายว่า: "${ventText}"\n\nเลือกข้อพระคัมภีร์ 1 ข้อจากฉบับ THSV11 ที่หนุนใจได้ตรงกับเรื่องที่เขาระบาย ตอบในรูปแบบ: {"verse":"เนื้อหาข้อ THSV11","reference":"ชื่อหนังสือ บทที่:ข้อที่"}`
-          }]
-        })
-      });
-
-      const data = await res.json();
-      const raw = data.content?.[0]?.text || "{}";
-      const parsed = JSON.parse(raw.replace(/```json|```/g,"").trim());
-
-      await db.collection("inbox").doc(ownerId)
-        .collection("messages").doc(msgId).update({
-          verse: parsed.verse || null,
-          verseRef: parsed.reference || null,
-          verseLoading: false
-        });
-    } catch(e) {
-      console.error("verse error:", e);
-      try {
-        await db.collection("inbox").doc(ownerId)
-          .collection("messages").doc(msgId).update({ verseLoading: false });
-      } catch(_) {}
-    }
-  }
-
-  // ── INBOX (realtime) ──
+  // ── INBOX (realtime + hearts on first load) ──
+  let inboxFirstLoad = true;
   function loadInbox() {
     db.collection("inbox").doc(myId).collection("messages")
       .orderBy("createdAt","desc")
       .onSnapshot(snap => {
-        const container = document.getElementById("inboxContainer");
+        const c = document.getElementById("inboxContainer");
         if (snap.empty) {
-          container.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความหนุนใจ<br>ลองไประบายก่อนแล้วรอนะ 💜</div>`;
+          c.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความหนุนใจ<br>ลองไประบายก่อนแล้วรอนะ 💜</div>`;
           return;
         }
-        container.innerHTML = snap.docs.map(d => {
+        // spawn hearts เมื่อมีข้อความใหม่เข้ามา (ไม่ใช่ครั้งแรก)
+        if (!inboxFirstLoad) spawnHearts();
+        inboxFirstLoad = false;
+
+        c.innerHTML = snap.docs.map(d => {
           const data = d.data();
-          let verseHtml = "";
-          if (data.verseLoading) {
-            verseHtml = `<div class="verse-card"><div class="verse-loading"><span class="spinner"></span>กำลังเลือกข้อพระคัมภีร์...</div></div>`;
-          } else if (data.verse) {
-            verseHtml = `
-              <div class="verse-card">
-                <div class="verse-label">✦ พระคำสำหรับเธอ (THSV11)</div>
-                <div class="verse-text">${escHtml(data.verse)}</div>
-                <div class="verse-ref">${escHtml(data.verseRef || "")}</div>
-              </div>`;
-          }
           return `
             <div class="inbox-card">
               <div class="from-label">💬 กำลังใจจากคนแปลกหน้า</div>
               <div class="enc-text">${escHtml(data.encouragement)}</div>
-              ${verseHtml}
             </div>`;
         }).join("");
       });
   }
 
-  // ── START ──
   loadInbox();
 </script>
 </body>
