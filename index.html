@@ -29,9 +29,8 @@
     .heart { position: absolute; font-size: 20px; opacity: 0; animation: floatHeart ease-out forwards; }
     @keyframes floatHeart {
       0%   { transform: translateY(0) scale(0.7); opacity: 0; }
-      15%  { opacity: 0.45; }
-      75%  { opacity: 0.25; }
-      100% { transform: translateY(-96vh) scale(0.9); opacity: 0.15; }
+      15%  { opacity: 0.4; }
+      100% { transform: translateY(-92vh) scale(0.9); opacity: 0.2; }
     }
 
     .header { padding: 24px 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
@@ -182,8 +181,6 @@
           filter: brightness(2) saturate(0);
         `;
         container.appendChild(h);
-        // ลบออกหลังจบ animation
-        setTimeout(() => h.remove(), (duration + delay + 0.3) * 1000);
       }, i * 100);
     }
   }
@@ -196,6 +193,7 @@
     });
     if (tab === "encourage") loadEncourageTab();
     if (tab === "inbox") { spawnHearts(); showBadge(0); }
+    else { document.getElementById("heartContainer").innerHTML = ""; }
   }
 
   function updateCount() {
@@ -284,9 +282,9 @@
       area.innerHTML = `
         <div class="shuffle-screen">
           <div class="shuffle-icon">🎲</div>
-          <div class="shuffle-count">มี ${_remaining.length} ข้อความที่รอการหนุนใจอยู่</div>
+          <div class="shuffle-count">มี ${_remaining.length} ข้อความที่รอกำลังใจอยู่</div>
           <button class="btn btn-primary" style="max-width:200px;margin:0 auto;font-size:15px" onclick="revealVent()">สุ่มเลย</button>
-          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอการหนุนใจจากเธออยู่</div>
+          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอรับการหนุนใจจากเธออยู่</div>
         </div>`;
     } catch(e) { area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`; }
   }
@@ -315,6 +313,7 @@
     try {
       await db.collection("inbox").doc(currentVent.userId).collection("messages").add({
         encouragement: msg,
+        ventText: currentVent.text,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       await db.collection("encouraged").doc(myId).set({
@@ -325,7 +324,7 @@
     } catch(e) {
       showToast("เกิดข้อผิดพลาด: " + e.message);
       const b = document.getElementById("encBtn");
-      if (b) { b.disabled = false; b.textContent = "หนุนใจ"; }
+      if (b) { b.disabled = false; b.textContent = "ส่งการหนุนใจ"; }
     }
   }
 
@@ -375,7 +374,7 @@
           return `
             <div class="inbox-card">
               ${ventCtx}
-              <div class="from-label">💬 รับไปการหนุนใจจากคนที่บางครั้งเราก็ไม่ต้องรู้ก็ได้ว่าคือใคร❤️‍🔥</div>
+              <div class="from-label">💬 รับไปการหนุนใจจากคนที่บางครั้งเราก็ไม่ต้องรู้ว่าใคร❤️‍🔥</div>
               <div class="enc-text">${escHtml(data.encouragement)}</div>
             </div>`;
         }).join("");
