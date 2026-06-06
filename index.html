@@ -288,9 +288,9 @@
       area.innerHTML = `
         <div class="shuffle-screen">
           <div class="shuffle-icon">🎲</div>
-          <div class="shuffle-count">มี ${_remaining.length} ข้อความที่รอรับการหนุนใจใจอยู่</div>
+          <div class="shuffle-count">มี ${_remaining.length} ข้อความที่รอการหนุนใจอยู่</div>
           <button class="btn btn-primary" style="max-width:200px;margin:0 auto;font-size:15px" onclick="revealVent()">สุ่มเลย</button>
-          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอกำลังใจจากเธออยู่</div>
+          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอรับการหนุนใจใจจากเธออยู่</div>
         </div>`;
     } catch(e) { area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`; }
   }
@@ -304,7 +304,7 @@
         <div class="anon-tag">익명 · ไม่ระบุตัวตน</div>
         <div class="vent-text">${escHtml(currentVent.text)}</div>
         <div class="encourage-area">
-          <textarea id="encText" placeholder="เขียนกำลังใจให้เขาหน่อยนะ..." maxlength="300"></textarea>
+          <textarea id="encText" placeholder="หนุนใจกันนะเพื่อนๆ..." maxlength="300"></textarea>
           <button class="send-enc-btn" id="encBtn" onclick="sendEncouragement()">ส่งกำลังใจ</button>
         </div>
       </div>
@@ -324,7 +324,7 @@
       await db.collection("encouraged").doc(myId).set({
         ventIds: firebase.firestore.FieldValue.arrayUnion(currentVent.id)
       }, { merge: true });
-      showToast("หนุนใจแล้ว 🫀");
+      showToast("ส่งกำลังใจแล้ว ❤️");
       loadEncourageTab();
     } catch(e) {
       showToast("เกิดข้อผิดพลาด: " + e.message);
@@ -352,7 +352,7 @@
           const data = d.data();
           return `
             <div class="inbox-card">
-              <div class="from-label">💬 รับไปกำลังใจปิ้วๆ❤️‍🔥</div>
+              <div class="from-label">💬 รับไปการหนุนใจจากคนที่บางครั้งเราไม่ต้องรู้ก็ได้ว่าใคร❤️‍🔥</div>
               <div class="enc-text">${escHtml(data.encouragement)}</div>
             </div>`;
         }).join("");
