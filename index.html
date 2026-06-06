@@ -26,12 +26,12 @@
 
     /* FLOATING HEARTS */
     .heart-container { position: fixed; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
-    .heart { position: absolute; bottom: -40px; font-size: 20px; opacity: 0; animation: floatHeart linear forwards; }
+    .heart { position: absolute; font-size: 20px; opacity: 0; animation: floatHeart ease-out forwards; }
     @keyframes floatHeart {
-      0%   { transform: translateY(0) scale(0.8); opacity: 0; }
-      10%  { opacity: 0.5; }
-      80%  { opacity: 0.25; }
-      100% { transform: translateY(-110vh) scale(1.1); opacity: 0; }
+      0%   { transform: translateY(0) scale(0.7); opacity: 0; }
+      15%  { opacity: 0.45; }
+      75%  { opacity: 0.25; }
+      100% { transform: translateY(-96vh) scale(0.9); opacity: 0.15; }
     }
 
     .header { padding: 24px 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
@@ -71,6 +71,10 @@
     .inbox-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; animation: fadeUp 0.3s ease; }
     .from-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
     .enc-text { font-size: 15px; line-height: 1.7; color: var(--text); }
+    .vent-context { font-size: 12px; line-height: 1.7; color: var(--muted); background: var(--surface2); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; border-left: 2px solid rgba(255,255,255,0.1); }
+    .vent-context-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); opacity: 0.6; margin-bottom: 5px; }
+    .badge { position: absolute; top: -4px; right: -4px; background: #ff6b6b; color: white; font-size: 10px; font-weight: 500; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    #tab-inbox { position: relative; }
 
     .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: block; margin: 0 auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -107,7 +111,7 @@
   <div class="tab active" id="tab-vent" onclick="switchTab('vent')">ระบาย</div>
   <div class="tab" id="tab-encourage" onclick="switchTab('encourage')">หนุนใจ</div>
   <div class="tab" id="tab-inbox" onclick="switchTab('inbox')">กล่องรับ</div>
-  <div class="tab" id="tab-mine" onclick="switchTab('mine')">ของฉัน</div>
+
 </div>
 
 <div class="page active" id="page-vent">
@@ -133,15 +137,7 @@
   </div>
 </div>
 
-<div class="page" id="page-mine">
-  <div style="margin-top:20px">
-    <div class="my-vents-header">
-      <div class="section-label" style="margin:0">ข้อความของฉัน</div>
-      <span class="reset-link" onclick="resetMyId()">รีเซ็ต ID</span>
-    </div>
-    <div id="myVentsContainer"><div class="feed-empty">กำลังโหลด...</div></div>
-  </div>
-</div>
+
 
 <div class="toast" id="toast"></div>
 
@@ -158,48 +154,48 @@
   });
   const db = firebase.firestore();
 
-  let myId = sessionStorage.getItem("buId");
-  if (!myId) { myId = "u_" + Math.random().toString(36).slice(2,8); sessionStorage.setItem("buId", myId); }
+  let myId = localStorage.getItem("buId");
+  if (!myId) { myId = "u_" + Math.random().toString(36).slice(2,8); localStorage.setItem("buId", myId); }
   document.getElementById("userBadge").textContent = myId;
 
   let currentVent = null, _remaining = [];
 
-  // ── FLOATING HEARTS ──
+  // ── FLOATING HEARTS (inbox only, 2-3 วิ แล้วกองบนขอบ) ──
   function spawnHearts() {
     const container = document.getElementById("heartContainer");
-    const count = 18;
+    const count = 16;
     for (let i = 0; i < count; i++) {
       setTimeout(() => {
         const h = document.createElement("div");
         h.className = "heart";
         h.textContent = "🤍";
-        const size = 14 + Math.random() * 16;
-        const left = 5 + Math.random() * 90;
-        const duration = 3.5 + Math.random() * 3;
-        const delay = Math.random() * 1.5;
+        const size = 12 + Math.random() * 14;
+        const left = 4 + Math.random() * 92;
+        const duration = 2.2 + Math.random() * 1.2;
+        const delay = Math.random() * 0.8;
         h.style.cssText = `
           left: ${left}%;
+          bottom: 0px;
           font-size: ${size}px;
           animation-duration: ${duration}s;
           animation-delay: ${delay}s;
-          filter: brightness(1.5) saturate(0);
-          opacity: 0;
+          filter: brightness(2) saturate(0);
         `;
         container.appendChild(h);
-        setTimeout(() => h.remove(), (duration + delay + 0.5) * 1000);
-      }, i * 120);
+        // ลบออกหลังจบ animation
+        setTimeout(() => h.remove(), (duration + delay + 0.3) * 1000);
+      }, i * 100);
     }
   }
 
   // ── TABS ──
   function switchTab(tab) {
-    ["vent","encourage","inbox","mine"].forEach(t => {
+    ["vent","encourage","inbox"].forEach(t => {
       document.getElementById("tab-"+t).classList.toggle("active", t===tab);
       document.getElementById("page-"+t).classList.toggle("active", t===tab);
     });
     if (tab === "encourage") loadEncourageTab();
-    if (tab === "mine") loadMyVents();
-    if (tab === "inbox") spawnHearts();
+    if (tab === "inbox") { spawnHearts(); showBadge(0); }
   }
 
   function updateCount() {
@@ -221,7 +217,7 @@
 
   function resetMyId() {
     if (!confirm("รีเซ็ต ID จะทำให้เธอไม่เห็นข้อความเก่าของตัวเองอีก แน่ใจไหม?")) return;
-    sessionStorage.removeItem("buId");
+    localStorage.removeItem("buId");
     location.reload();
   }
 
@@ -246,7 +242,7 @@
     const c = document.getElementById("myVentsContainer");
     c.innerHTML = `<div class="feed-empty"><span class="spinner"></span></div>`;
     try {
-      const snap = await db.collection("vents").where("userId","==",myId).orderBy("createdAt","desc").get();
+      const snap = await db.collection("vents").where("userId","==",myId).get();
       if (snap.empty) { c.innerHTML = `<div class="feed-empty">เธอยังไม่ได้ระบายอะไรเลย 🌿</div>`; return; }
       c.innerHTML = snap.docs.map(d => `
         <div class="my-vent-item" id="myvent-${d.id}">
@@ -290,7 +286,7 @@
           <div class="shuffle-icon">🎲</div>
           <div class="shuffle-count">มี ${_remaining.length} ข้อความที่รอการหนุนใจอยู่</div>
           <button class="btn btn-primary" style="max-width:200px;margin:0 auto;font-size:15px" onclick="revealVent()">สุ่มเลย</button>
-          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอรับการหนุนใจใจจากเธออยู่</div>
+          <div class="shuffle-hint">กดแล้วจะได้รับข้อความของคนคนหนึ่ง<br>ที่รอการหนุนใจจากเธออยู่</div>
         </div>`;
     } catch(e) { area.innerHTML = `<div class="feed-empty">โหลดไม่ได้: ${e.message}</div>`; }
   }
@@ -304,7 +300,7 @@
         <div class="anon-tag">익명 · ไม่ระบุตัวตน</div>
         <div class="vent-text">${escHtml(currentVent.text)}</div>
         <div class="encourage-area">
-          <textarea id="encText" placeholder="หนุนใจกันนะเพื่อนๆ..." maxlength="300"></textarea>
+          <textarea id="encText" placeholder="หนุนใจให้เพื่อนหน่อยนะ..." maxlength="300"></textarea>
           <button class="send-enc-btn" id="encBtn" onclick="sendEncouragement()">ส่งกำลังใจ</button>
         </div>
       </div>
@@ -324,17 +320,27 @@
       await db.collection("encouraged").doc(myId).set({
         ventIds: firebase.firestore.FieldValue.arrayUnion(currentVent.id)
       }, { merge: true });
-      showToast("ส่งกำลังใจแล้ว ❤️");
+      showToast("หนุนใจแล้ว ❤️");
       loadEncourageTab();
     } catch(e) {
       showToast("เกิดข้อผิดพลาด: " + e.message);
       const b = document.getElementById("encBtn");
-      if (b) { b.disabled = false; b.textContent = "ส่งกำลังใจ"; }
+      if (b) { b.disabled = false; b.textContent = "หนุนใจ"; }
     }
   }
 
   // ── INBOX (realtime + hearts on first load) ──
   let inboxFirstLoad = true;
+  let lastInboxCount = 0;
+
+  function showBadge(count) {
+    const tab = document.getElementById("tab-inbox");
+    let badge = tab.querySelector(".badge");
+    if (count <= 0) { if (badge) badge.remove(); return; }
+    if (!badge) { badge = document.createElement("div"); badge.className = "badge"; tab.appendChild(badge); }
+    badge.textContent = count > 9 ? "9+" : count;
+  }
+
   function loadInbox() {
     db.collection("inbox").doc(myId).collection("messages")
       .orderBy("createdAt","desc")
@@ -342,17 +348,34 @@
         const c = document.getElementById("inboxContainer");
         if (snap.empty) {
           c.innerHTML = `<div class="feed-empty">ยังไม่มีข้อความหนุนใจ<br>ลองไประบายก่อนแล้วรอนะ 💜</div>`;
+          inboxFirstLoad = false;
           return;
         }
-        // spawn hearts เมื่อมีข้อความใหม่เข้ามา (ไม่ใช่ครั้งแรก)
-        if (!inboxFirstLoad) spawnHearts();
+
+        const onInbox = document.getElementById("page-inbox").classList.contains("active");
+        const newCount = snap.size;
+
+        if (!inboxFirstLoad) {
+          if (onInbox) {
+            spawnHearts();
+          } else if (newCount > lastInboxCount) {
+            showBadge(newCount - lastInboxCount);
+          }
+        }
         inboxFirstLoad = false;
+        lastInboxCount = newCount;
 
         c.innerHTML = snap.docs.map(d => {
           const data = d.data();
+          const ventCtx = data.ventText ? `
+            <div class="vent-context">
+              <div class="vent-context-label">สิ่งที่เธอระบาย</div>
+              ${escHtml(data.ventText)}
+            </div>` : "";
           return `
             <div class="inbox-card">
-              <div class="from-label">💬 รับไปการหนุนใจจากคนที่บางครั้งเราไม่ต้องรู้ก็ได้ว่าใคร❤️‍🔥</div>
+              ${ventCtx}
+              <div class="from-label">💬 รับไปการหนุนใจจากคนที่บางครั้งเราก็ไม่ต้องรู้ก็ได้ว่าคือใคร❤️‍🔥</div>
               <div class="enc-text">${escHtml(data.encouragement)}</div>
             </div>`;
         }).join("");
